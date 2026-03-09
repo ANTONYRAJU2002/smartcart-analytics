@@ -1,0 +1,7 @@
+id,username,email,role,is_approved
+1,test,test@test.com,customer,True
+2,admin,admin@test.com,admin,True
+3,staff,staff@test.com,staff,True
+4,customer,customer@test.com,customer,True
+5,admin_verify,admin@smartcart.com,admin,True
+6,staff_member,staff@smartcart.com,staff,True

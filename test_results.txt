@@ -1,0 +1,1626 @@
+﻿python : EEEE
+At line:1 char:28
++ ... ATH="backend"; 
+python backend/tests/
+test_admin_module.py 
+2>&1 | Out-F ...
++                    
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (EEEE:St   
+ ring) [], Remote    
+Exception
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+=====================
+=====================
+=====================
+=======
+ERROR: test_category_
+management (__main__.
+TestAdminModule.test_
+category_management)
+---------------------
+---------------------
+---------------------
+-------
+Traceback (most 
+recent call last):
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1963, in 
+_exec_single_context
+    self.dialect.do_e
+xecute(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~^
+        cursor, 
+str_statement, effect
+ive_parameters, 
+context
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\default.py", 
+line 943, in 
+do_execute
+    cursor.execute(st
+atement, parameters)
+    ~~~~~~~~~~~~~~^^^
+^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityErro
+r: UNIQUE constraint 
+failed: user.username
+
+The above exception 
+was the direct cause 
+of the following 
+exception:
+
+Traceback (most 
+recent call last):
+  File "C:\Users\anto
+n\OneDrive\Desktop\sm
+art\backend\tests\tes
+t_admin_module.py", 
+line 16, in setUp
+    
+self.create_users()
+    
+~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\OneDrive\Desktop\sm
+art\backend\tests\tes
+t_admin_module.py", 
+line 37, in 
+create_users
+    
+db.session.commit()
+    
+~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\scoping.py", line 
+599, in commit
+    return self._prox
+ied.commit()
+           ~~~~~~~~~~
+~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+2032, in commit
+    trans.commit(_to_
+root=True)
+    ~~~~~~~~~~~~^^^^^
+^^^^^^^^^^
+  File "<string>", 
+line 2, in commit
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\state_changes.py", 
+line 139, in _go
+    ret_value = 
+fn(self, *arg, **kw)
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+1313, in commit
+    
+self._prepare_impl()
+    
+~~~~~~~~~~~~~~~~~~^^
+  File "<string>", 
+line 2, in 
+_prepare_impl
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\state_changes.py", 
+line 139, in _go
+    ret_value = 
+fn(self, *arg, **kw)
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+1288, in 
+_prepare_impl
+    
+self.session.flush()
+    
+~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+4345, in flush
+    
+self._flush(objects)
+    
+~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+4480, in _flush
+    with 
+util.safe_reraise():
+         
+~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\uti
+l\langhelpers.py", 
+line 224, in __exit__
+    raise exc_value.w
+ith_traceback(exc_tb)
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+4441, in _flush
+    flush_context.exe
+cute()
+    ~~~~~~~~~~~~~~~~~
+~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\unitofwork.py", 
+line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\unitofwork.py", 
+line 642, in execute
+    util.preloaded.or
+m_persistence.save_ob
+j(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_fo
+r_mapper_hierarchy(se
+lf.mapper, False, 
+False),
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\persistence.py", 
+line 93, in save_obj
+    _emit_insert_stat
+ements(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\persistence.py", 
+line 1233, in _emit_i
+nsert_statements
+    result = 
+connection.execute(
+        statement,
+        params,
+        execution_opt
+ions=execution_option
+s,
+    )
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1415, in execute
+    return meth(
+        self,
+        
+distilled_parameters,
+        
+execution_options or 
+NO_OPTIONS,
+    )
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\sql
+\elements.py", line 
+523, in _execute_on_c
+onnection
+    return connection
+._execute_clauseeleme
+nt(
+           ~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~^
+        self, 
+distilled_params, 
+execution_options
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1637, in _execute_cla
+useelement
+    ret = self._execu
+te_context(
+        dialect,
+    ...<8 lines>...
+        
+cache_hit=cache_hit,
+    )
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1842, in 
+_execute_context
+    return self._exec
+_single_context(
+           ~~~~~~~~~~
+~~~~~~~~~~~~~~~^
+        dialect, 
+context, statement, 
+parameters
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1982, in 
+_exec_single_context
+    self._handle_dbap
+i_exception(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~^
+        e, 
+str_statement, effect
+ive_parameters, 
+cursor, context
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+2351, in _handle_dbap
+i_exception
+    raise sqlalchemy_
+exception.with_traceb
+ack(exc_info[2]) 
+from e
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1963, in 
+_exec_single_context
+    self.dialect.do_e
+xecute(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~^
+        cursor, 
+str_statement, effect
+ive_parameters, 
+context
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\default.py", 
+line 943, in 
+do_execute
+    cursor.execute(st
+atement, parameters)
+    ~~~~~~~~~~~~~~^^^
+^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.Integr
+ityError: (sqlite3.In
+tegrityError) UNIQUE 
+constraint failed: 
+user.username
+[SQL: INSERT INTO 
+user (username, 
+email, 
+password_hash, role, 
+is_approved, active, 
+phone_number) VALUES 
+(?, ?, ?, ?, ?, ?, 
+?)]
+[parameters: 
+('admin', 
+'admin@test.com', 'sc
+rypt:32768:8:1$hqTkRT
+d9Wrcw201e$a0dc68345c
+80da745c543583f0b813c
+ac29b7030ab7f0d2506f7
+b43498b6066dca46d3066
+782034b4f9ca718f2e676
+b33011b2dcfd04b9c9b68
+05f879a4b82a3', 
+'admin', 1, 1, None)]
+(Background on this 
+error at: https://sql
+alche.me/e/20/gkpj)
+
+=====================
+=====================
+=====================
+=======
+ERROR: test_order_man
+agement (__main__.Tes
+tAdminModule.test_ord
+er_management)
+---------------------
+---------------------
+---------------------
+-------
+Traceback (most 
+recent call last):
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1963, in 
+_exec_single_context
+    self.dialect.do_e
+xecute(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~^
+        cursor, 
+str_statement, effect
+ive_parameters, 
+context
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\default.py", 
+line 943, in 
+do_execute
+    cursor.execute(st
+atement, parameters)
+    ~~~~~~~~~~~~~~^^^
+^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityErro
+r: UNIQUE constraint 
+failed: user.username
+
+The above exception 
+was the direct cause 
+of the following 
+exception:
+
+Traceback (most 
+recent call last):
+  File "C:\Users\anto
+n\OneDrive\Desktop\sm
+art\backend\tests\tes
+t_admin_module.py", 
+line 16, in setUp
+    
+self.create_users()
+    
+~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\OneDrive\Desktop\sm
+art\backend\tests\tes
+t_admin_module.py", 
+line 37, in 
+create_users
+    
+db.session.commit()
+    
+~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\scoping.py", line 
+599, in commit
+    return self._prox
+ied.commit()
+           ~~~~~~~~~~
+~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+2032, in commit
+    trans.commit(_to_
+root=True)
+    ~~~~~~~~~~~~^^^^^
+^^^^^^^^^^
+  File "<string>", 
+line 2, in commit
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\state_changes.py", 
+line 139, in _go
+    ret_value = 
+fn(self, *arg, **kw)
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+1313, in commit
+    
+self._prepare_impl()
+    
+~~~~~~~~~~~~~~~~~~^^
+  File "<string>", 
+line 2, in 
+_prepare_impl
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\state_changes.py", 
+line 139, in _go
+    ret_value = 
+fn(self, *arg, **kw)
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+1288, in 
+_prepare_impl
+    
+self.session.flush()
+    
+~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+4345, in flush
+    
+self._flush(objects)
+    
+~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+4480, in _flush
+    with 
+util.safe_reraise():
+         
+~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\uti
+l\langhelpers.py", 
+line 224, in __exit__
+    raise exc_value.w
+ith_traceback(exc_tb)
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+4441, in _flush
+    flush_context.exe
+cute()
+    ~~~~~~~~~~~~~~~~~
+~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\unitofwork.py", 
+line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\unitofwork.py", 
+line 642, in execute
+    util.preloaded.or
+m_persistence.save_ob
+j(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_fo
+r_mapper_hierarchy(se
+lf.mapper, False, 
+False),
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\persistence.py", 
+line 93, in save_obj
+    _emit_insert_stat
+ements(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\persistence.py", 
+line 1233, in _emit_i
+nsert_statements
+    result = 
+connection.execute(
+        statement,
+        params,
+        execution_opt
+ions=execution_option
+s,
+    )
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1415, in execute
+    return meth(
+        self,
+        
+distilled_parameters,
+        
+execution_options or 
+NO_OPTIONS,
+    )
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\sql
+\elements.py", line 
+523, in _execute_on_c
+onnection
+    return connection
+._execute_clauseeleme
+nt(
+           ~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~^
+        self, 
+distilled_params, 
+execution_options
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1637, in _execute_cla
+useelement
+    ret = self._execu
+te_context(
+        dialect,
+    ...<8 lines>...
+        
+cache_hit=cache_hit,
+    )
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1842, in 
+_execute_context
+    return self._exec
+_single_context(
+           ~~~~~~~~~~
+~~~~~~~~~~~~~~~^
+        dialect, 
+context, statement, 
+parameters
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1982, in 
+_exec_single_context
+    self._handle_dbap
+i_exception(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~^
+        e, 
+str_statement, effect
+ive_parameters, 
+cursor, context
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+2351, in _handle_dbap
+i_exception
+    raise sqlalchemy_
+exception.with_traceb
+ack(exc_info[2]) 
+from e
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1963, in 
+_exec_single_context
+    self.dialect.do_e
+xecute(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~^
+        cursor, 
+str_statement, effect
+ive_parameters, 
+context
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\default.py", 
+line 943, in 
+do_execute
+    cursor.execute(st
+atement, parameters)
+    ~~~~~~~~~~~~~~^^^
+^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.Integr
+ityError: (sqlite3.In
+tegrityError) UNIQUE 
+constraint failed: 
+user.username
+[SQL: INSERT INTO 
+user (username, 
+email, 
+password_hash, role, 
+is_approved, active, 
+phone_number) VALUES 
+(?, ?, ?, ?, ?, ?, 
+?)]
+[parameters: 
+('admin', 
+'admin@test.com', 'sc
+rypt:32768:8:1$KutpDc
+fFhVvDcfxh$9fa79f0a70
+d0107bdfc8835540fff13
+d1639261e3b2fc5f5e731
+e9a9ce5b6fb8b7cd03d9f
+0ce409121772c624d61d3
+67f25c25e6a819b983b15
+d481587ea013a', 
+'admin', 1, 1, None)]
+(Background on this 
+error at: https://sql
+alche.me/e/20/gkpj)
+
+=====================
+=====================
+=====================
+=======
+ERROR: test_staff_man
+agement (__main__.Tes
+tAdminModule.test_sta
+ff_management)
+---------------------
+---------------------
+---------------------
+-------
+Traceback (most 
+recent call last):
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1963, in 
+_exec_single_context
+    self.dialect.do_e
+xecute(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~^
+        cursor, 
+str_statement, effect
+ive_parameters, 
+context
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\default.py", 
+line 943, in 
+do_execute
+    cursor.execute(st
+atement, parameters)
+    ~~~~~~~~~~~~~~^^^
+^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityErro
+r: UNIQUE constraint 
+failed: user.username
+
+The above exception 
+was the direct cause 
+of the following 
+exception:
+
+Traceback (most 
+recent call last):
+  File "C:\Users\anto
+n\OneDrive\Desktop\sm
+art\backend\tests\tes
+t_admin_module.py", 
+line 16, in setUp
+    
+self.create_users()
+    
+~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\OneDrive\Desktop\sm
+art\backend\tests\tes
+t_admin_module.py", 
+line 37, in 
+create_users
+    
+db.session.commit()
+    
+~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\scoping.py", line 
+599, in commit
+    return self._prox
+ied.commit()
+           ~~~~~~~~~~
+~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+2032, in commit
+    trans.commit(_to_
+root=True)
+    ~~~~~~~~~~~~^^^^^
+^^^^^^^^^^
+  File "<string>", 
+line 2, in commit
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\state_changes.py", 
+line 139, in _go
+    ret_value = 
+fn(self, *arg, **kw)
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+1313, in commit
+    
+self._prepare_impl()
+    
+~~~~~~~~~~~~~~~~~~^^
+  File "<string>", 
+line 2, in 
+_prepare_impl
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\state_changes.py", 
+line 139, in _go
+    ret_value = 
+fn(self, *arg, **kw)
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+1288, in 
+_prepare_impl
+    
+self.session.flush()
+    
+~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+4345, in flush
+    
+self._flush(objects)
+    
+~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+4480, in _flush
+    with 
+util.safe_reraise():
+         
+~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\uti
+l\langhelpers.py", 
+line 224, in __exit__
+    raise exc_value.w
+ith_traceback(exc_tb)
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+4441, in _flush
+    flush_context.exe
+cute()
+    ~~~~~~~~~~~~~~~~~
+~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\unitofwork.py", 
+line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\unitofwork.py", 
+line 642, in execute
+    util.preloaded.or
+m_persistence.save_ob
+j(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_fo
+r_mapper_hierarchy(se
+lf.mapper, False, 
+False),
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\persistence.py", 
+line 93, in save_obj
+    _emit_insert_stat
+ements(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\persistence.py", 
+line 1233, in _emit_i
+nsert_statements
+    result = 
+connection.execute(
+        statement,
+        params,
+        execution_opt
+ions=execution_option
+s,
+    )
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1415, in execute
+    return meth(
+        self,
+        
+distilled_parameters,
+        
+execution_options or 
+NO_OPTIONS,
+    )
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\sql
+\elements.py", line 
+523, in _execute_on_c
+onnection
+    return connection
+._execute_clauseeleme
+nt(
+           ~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~^
+        self, 
+distilled_params, 
+execution_options
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1637, in _execute_cla
+useelement
+    ret = self._execu
+te_context(
+        dialect,
+    ...<8 lines>...
+        
+cache_hit=cache_hit,
+    )
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1842, in 
+_execute_context
+    return self._exec
+_single_context(
+           ~~~~~~~~~~
+~~~~~~~~~~~~~~~^
+        dialect, 
+context, statement, 
+parameters
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1982, in 
+_exec_single_context
+    self._handle_dbap
+i_exception(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~^
+        e, 
+str_statement, effect
+ive_parameters, 
+cursor, context
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+2351, in _handle_dbap
+i_exception
+    raise sqlalchemy_
+exception.with_traceb
+ack(exc_info[2]) 
+from e
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1963, in 
+_exec_single_context
+    self.dialect.do_e
+xecute(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~^
+        cursor, 
+str_statement, effect
+ive_parameters, 
+context
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\default.py", 
+line 943, in 
+do_execute
+    cursor.execute(st
+atement, parameters)
+    ~~~~~~~~~~~~~~^^^
+^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.Integr
+ityError: (sqlite3.In
+tegrityError) UNIQUE 
+constraint failed: 
+user.username
+[SQL: INSERT INTO 
+user (username, 
+email, 
+password_hash, role, 
+is_approved, active, 
+phone_number) VALUES 
+(?, ?, ?, ?, ?, ?, 
+?)]
+[parameters: 
+('admin', 
+'admin@test.com', 'sc
+rypt:32768:8:1$zqjpfb
+wAW2ayv9FY$74f3767ba7
+5654d6a4445dfa8790fb6
+ed5427f8455fcf7361692
+117f2896fa1ec3863ec4c
+f5a81934d71bed233021d
+db9a409aea5429157d63a
+cb2618150596d', 
+'admin', 1, 1, None)]
+(Background on this 
+error at: https://sql
+alche.me/e/20/gkpj)
+
+=====================
+=====================
+=====================
+=======
+ERROR: 
+test_support_flow (__
+main__.TestAdminModul
+e.test_support_flow)
+---------------------
+---------------------
+---------------------
+-------
+Traceback (most 
+recent call last):
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1963, in 
+_exec_single_context
+    self.dialect.do_e
+xecute(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~^
+        cursor, 
+str_statement, effect
+ive_parameters, 
+context
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\default.py", 
+line 943, in 
+do_execute
+    cursor.execute(st
+atement, parameters)
+    ~~~~~~~~~~~~~~^^^
+^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityErro
+r: UNIQUE constraint 
+failed: user.username
+
+The above exception 
+was the direct cause 
+of the following 
+exception:
+
+Traceback (most 
+recent call last):
+  File "C:\Users\anto
+n\OneDrive\Desktop\sm
+art\backend\tests\tes
+t_admin_module.py", 
+line 16, in setUp
+    
+self.create_users()
+    
+~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\OneDrive\Desktop\sm
+art\backend\tests\tes
+t_admin_module.py", 
+line 37, in 
+create_users
+    
+db.session.commit()
+    
+~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\scoping.py", line 
+599, in commit
+    return self._prox
+ied.commit()
+           ~~~~~~~~~~
+~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+2032, in commit
+    trans.commit(_to_
+root=True)
+    ~~~~~~~~~~~~^^^^^
+^^^^^^^^^^
+  File "<string>", 
+line 2, in commit
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\state_changes.py", 
+line 139, in _go
+    ret_value = 
+fn(self, *arg, **kw)
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+1313, in commit
+    
+self._prepare_impl()
+    
+~~~~~~~~~~~~~~~~~~^^
+  File "<string>", 
+line 2, in 
+_prepare_impl
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\state_changes.py", 
+line 139, in _go
+    ret_value = 
+fn(self, *arg, **kw)
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+1288, in 
+_prepare_impl
+    
+self.session.flush()
+    
+~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+4345, in flush
+    
+self._flush(objects)
+    
+~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+4480, in _flush
+    with 
+util.safe_reraise():
+         
+~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\uti
+l\langhelpers.py", 
+line 224, in __exit__
+    raise exc_value.w
+ith_traceback(exc_tb)
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\session.py", line 
+4441, in _flush
+    flush_context.exe
+cute()
+    ~~~~~~~~~~~~~~~~~
+~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\unitofwork.py", 
+line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\unitofwork.py", 
+line 642, in execute
+    util.preloaded.or
+m_persistence.save_ob
+j(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_fo
+r_mapper_hierarchy(se
+lf.mapper, False, 
+False),
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\persistence.py", 
+line 93, in save_obj
+    _emit_insert_stat
+ements(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\persistence.py", 
+line 1233, in _emit_i
+nsert_statements
+    result = 
+connection.execute(
+        statement,
+        params,
+        execution_opt
+ions=execution_option
+s,
+    )
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1415, in execute
+    return meth(
+        self,
+        
+distilled_parameters,
+        
+execution_options or 
+NO_OPTIONS,
+    )
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\sql
+\elements.py", line 
+523, in _execute_on_c
+onnection
+    return connection
+._execute_clauseeleme
+nt(
+           ~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~^
+        self, 
+distilled_params, 
+execution_options
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1637, in _execute_cla
+useelement
+    ret = self._execu
+te_context(
+        dialect,
+    ...<8 lines>...
+        
+cache_hit=cache_hit,
+    )
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1842, in 
+_execute_context
+    return self._exec
+_single_context(
+           ~~~~~~~~~~
+~~~~~~~~~~~~~~~^
+        dialect, 
+context, statement, 
+parameters
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1982, in 
+_exec_single_context
+    self._handle_dbap
+i_exception(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~^
+        e, 
+str_statement, effect
+ive_parameters, 
+cursor, context
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+2351, in _handle_dbap
+i_exception
+    raise sqlalchemy_
+exception.with_traceb
+ack(exc_info[2]) 
+from e
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\base.py", line 
+1963, in 
+_exec_single_context
+    self.dialect.do_e
+xecute(
+    ~~~~~~~~~~~~~~~~~
+~~~~~~^
+        cursor, 
+str_statement, effect
+ive_parameters, 
+context
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\eng
+ine\default.py", 
+line 943, in 
+do_execute
+    cursor.execute(st
+atement, parameters)
+    ~~~~~~~~~~~~~~^^^
+^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.Integr
+ityError: (sqlite3.In
+tegrityError) UNIQUE 
+constraint failed: 
+user.username
+[SQL: INSERT INTO 
+user (username, 
+email, 
+password_hash, role, 
+is_approved, active, 
+phone_number) VALUES 
+(?, ?, ?, ?, ?, ?, 
+?)]
+[parameters: 
+('admin', 
+'admin@test.com', 'sc
+rypt:32768:8:1$YwVYOr
+D0tM6m7SCU$26b9e8d1aa
+48ec13577d5158409efe1
+d99799b80f00ad8cac1f9
+e6874afa0ab1457e664b4
+d9629a2a86bd4297d8df3
+b7c81b338af468914f329
+f6d4d5456cfe1', 
+'admin', 1, 1, None)]
+(Background on this 
+error at: https://sql
+alche.me/e/20/gkpj)
+
+---------------------
+---------------------
+---------------------
+-------
+Ran 4 tests in 5.356s
+
+FAILED (errors=4)

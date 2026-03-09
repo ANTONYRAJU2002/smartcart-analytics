@@ -1,0 +1,481 @@
+﻿python : C:\Users\ant
+on\OneDrive\Desktop\s
+mart\backend\app\rout
+es\products.py:320: 
+LegacyAPIWarning: 
+The Query.get() 
+method is considered 
+legacy as of the 1.x 
+series of SQLAlchemy 
+and becomes a legacy 
+construct in 2.0. 
+The method is now 
+available as 
+Session.get() 
+(deprecated since: 
+2.0) (Background on 
+SQLAlchemy 2.0 at: ht
+tps://sqlalche.me/e/b
+8d9)
+At line:1 char:28
++ ... ATH="backend"; 
+python backend/tests/
+test_admin_module.py 
+2>&1 | Out-F ...
++                    
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (C:\User   
+ s\anton\...lche.    
+me/e/b8d9):Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+  current_user = User
+.query.get(current_us
+er_id)
+C:\Users\anton\OneDri
+ve\Desktop\smart\back
+end\app\routes\produc
+ts.py:341: 
+LegacyAPIWarning: 
+The Query.get() 
+method is considered 
+legacy as of the 1.x 
+series of SQLAlchemy 
+and becomes a legacy 
+construct in 2.0. 
+The method is now 
+available as 
+Session.get() 
+(deprecated since: 
+2.0) (Background on 
+SQLAlchemy 2.0 at: ht
+tps://sqlalche.me/e/b
+8d9)
+  current_user = User
+.query.get(current_us
+er_id)
+C:\Users\anton\AppDat
+a\Roaming\Python\Pyth
+on313\site-packages\f
+lask_sqlalchemy\query
+.py:30: 
+LegacyAPIWarning: 
+The Query.get() 
+method is considered 
+legacy as of the 1.x 
+series of SQLAlchemy 
+and becomes a legacy 
+construct in 2.0. 
+The method is now 
+available as 
+Session.get() 
+(deprecated since: 
+2.0) (Background on 
+SQLAlchemy 2.0 at: ht
+tps://sqlalche.me/e/b
+8d9)
+  rv = 
+self.get(ident)
+.EC:\Users\anton\OneD
+rive\Desktop\smart\ba
+ckend\app\routes\admi
+n.py:12: 
+LegacyAPIWarning: 
+The Query.get() 
+method is considered 
+legacy as of the 1.x 
+series of SQLAlchemy 
+and becomes a legacy 
+construct in 2.0. 
+The method is now 
+available as 
+Session.get() 
+(deprecated since: 
+2.0) (Background on 
+SQLAlchemy 2.0 at: ht
+tps://sqlalche.me/e/b
+8d9)
+  current_user = User
+.query.get(current_us
+er_id)
+EC:\Users\anton\AppDa
+ta\Roaming\Python\Pyt
+hon313\site-packages\
+sqlalchemy\sql\schema
+.py:3624: 
+DeprecationWarning: d
+atetime.datetime.utcn
+ow() is deprecated 
+and scheduled for 
+removal in a future 
+version. Use 
+timezone-aware 
+objects to represent 
+datetimes in UTC: dat
+etime.datetime.now(da
+tetime.UTC).
+  return util.wrap_ca
+llable(lambda ctx: 
+fn(), fn)  # type: 
+ignore
+C:\Users\anton\AppDat
+a\Roaming\Python\Pyth
+on313\site-packages\s
+qlalchemy\sql\schema.
+py:3624: 
+DeprecationWarning: d
+atetime.datetime.utcn
+ow() is deprecated 
+and scheduled for 
+removal in a future 
+version. Use 
+timezone-aware 
+objects to represent 
+datetimes in UTC: dat
+etime.datetime.now(da
+tetime.UTC).
+  return util.wrap_ca
+llable(lambda ctx: 
+fn(), fn)  # type: 
+ignore
+C:\Users\anton\OneDri
+ve\Desktop\smart\back
+end\app\routes\suppor
+t.py:105: 
+LegacyAPIWarning: 
+The Query.get() 
+method is considered 
+legacy as of the 1.x 
+series of SQLAlchemy 
+and becomes a legacy 
+construct in 2.0. 
+The method is now 
+available as 
+Session.get() 
+(deprecated since: 
+2.0) (Background on 
+SQLAlchemy 2.0 at: ht
+tps://sqlalche.me/e/b
+8d9)
+  current_user = User
+.query.get(current_us
+er_id)
+C:\Users\anton\AppDat
+a\Roaming\Python\Pyth
+on313\site-packages\f
+lask_sqlalchemy\query
+.py:30: 
+LegacyAPIWarning: 
+The Query.get() 
+method is considered 
+legacy as of the 1.x 
+series of SQLAlchemy 
+and becomes a legacy 
+construct in 2.0. 
+The method is now 
+available as 
+Session.get() 
+(deprecated since: 
+2.0) (Background on 
+SQLAlchemy 2.0 at: ht
+tps://sqlalche.me/e/b
+8d9)
+  rv = 
+self.get(ident)
+C:\Users\anton\AppDat
+a\Roaming\Python\Pyth
+on313\site-packages\s
+qlalchemy\sql\schema.
+py:3624: 
+DeprecationWarning: d
+atetime.datetime.utcn
+ow() is deprecated 
+and scheduled for 
+removal in a future 
+version. Use 
+timezone-aware 
+objects to represent 
+datetimes in UTC: dat
+etime.datetime.now(da
+tetime.UTC).
+  return util.wrap_ca
+llable(lambda ctx: 
+fn(), fn)  # type: 
+ignore
+C:\Users\anton\OneDri
+ve\Desktop\smart\back
+end\app\routes\suppor
+t.py:75: 
+LegacyAPIWarning: 
+The Query.get() 
+method is considered 
+legacy as of the 1.x 
+series of SQLAlchemy 
+and becomes a legacy 
+construct in 2.0. 
+The method is now 
+available as 
+Session.get() 
+(deprecated since: 
+2.0) (Background on 
+SQLAlchemy 2.0 at: ht
+tps://sqlalche.me/e/b
+8d9)
+  current_user = User
+.query.get(current_us
+er_id)
+C:\Users\anton\AppDat
+a\Roaming\Python\Pyth
+on313\site-packages\f
+lask_sqlalchemy\query
+.py:30: 
+LegacyAPIWarning: 
+The Query.get() 
+method is considered 
+legacy as of the 1.x 
+series of SQLAlchemy 
+and becomes a legacy 
+construct in 2.0. 
+The method is now 
+available as 
+Session.get() 
+(deprecated since: 
+2.0) (Background on 
+SQLAlchemy 2.0 at: ht
+tps://sqlalche.me/e/b
+8d9)
+  rv = 
+self.get(ident)
+C:\Users\anton\OneDri
+ve\Desktop\smart\back
+end\app\routes\suppor
+t.py:55: 
+LegacyAPIWarning: 
+The Query.get() 
+method is considered 
+legacy as of the 1.x 
+series of SQLAlchemy 
+and becomes a legacy 
+construct in 2.0. 
+The method is now 
+available as 
+Session.get() 
+(deprecated since: 
+2.0) (Background on 
+SQLAlchemy 2.0 at: ht
+tps://sqlalche.me/e/b
+8d9)
+  current_user = User
+.query.get(current_us
+er_id)
+.
+=====================
+=====================
+=====================
+=======
+ERROR: test_order_man
+agement (__main__.Tes
+tAdminModule.test_ord
+er_management)
+---------------------
+---------------------
+---------------------
+-------
+Traceback (most 
+recent call last):
+  File "C:\Users\anto
+n\OneDrive\Desktop\sm
+art\backend\tests\tes
+t_admin_module.py", 
+line 71, in 
+test_order_management
+    
+db.session.add(prod)
+    
+~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\scoping.py", line 
+380, in add
+    return self._prox
+ied.add(instance, 
+_warn=_warn)
+           
+^^^^^^^^^^^^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\scoping.py", line 
+197, in _proxied
+    return 
+self.registry()
+           
+~~~~~~~~~~~~~^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\uti
+l\_collections.py", 
+line 634, in __call__
+    key = 
+self.scopefunc()
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\flask_sqlalche
+my\session.py", line 
+111, in _app_ctx_id
+    return id(app_ctx
+._get_current_object(
+))  # type: 
+ignore[attr-defined]
+              ~~~~~~~
+~~~~~~~~~~~~~~~~~~~~^
+^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\werkzeug\local
+.py", line 519, in 
+_get_current_object
+    raise RuntimeErro
+r(unbound_message) 
+from None
+RuntimeError: 
+Working outside of 
+application context.
+
+This typically means 
+that you attempted 
+to use functionality 
+that needed
+the current 
+application. To 
+solve this, set up 
+an application 
+context
+with 
+app.app_context(). 
+See the 
+documentation for 
+more information.
+
+=====================
+=====================
+=====================
+=======
+ERROR: test_staff_man
+agement (__main__.Tes
+tAdminModule.test_sta
+ff_management)
+---------------------
+---------------------
+---------------------
+-------
+Traceback (most 
+recent call last):
+  File "C:\Users\anto
+n\OneDrive\Desktop\sm
+art\backend\tests\tes
+t_admin_module.py", 
+line 134, in 
+test_staff_management
+    res = self.client
+.patch(f'/api/admin/s
+taff/{self.staff.id}/
+status', 
+json={'active': 
+False}, headers=self.
+admin_headers)
+                     
+                     
+      ^^^^^^^^^^^^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\attributes.py", 
+line 566, in __get__
+    return 
+self.impl.get(state, 
+dict_)  # type: 
+ignore[no-any-return]
+           ~~~~~~~~~~
+~~~^^^^^^^^^^^^^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\attributes.py", 
+line 1086, in get
+    value = self._fir
+e_loader_callables(st
+ate, key, passive)
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\attributes.py", 
+line 1116, in _fire_l
+oader_callables
+    return state._loa
+d_expired(state, 
+passive)
+           ~~~~~~~~~~
+~~~~~~~~~^^^^^^^^^^^^
+^^^^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\state.py", line 
+803, in _load_expired
+    self.manager.expi
+red_attribute_loader(
+self, toload, 
+passive)
+    ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~^
+^^^^^^^^^^^^^^^^^^^^^
+^
+  File "C:\Users\anto
+n\AppData\Roaming\Pyt
+hon\Python313\site-pa
+ckages\sqlalchemy\orm
+\loading.py", line 
+1603, in load_scalar_
+attributes
+    raise orm_exc.Det
+achedInstanceError(
+    ...<2 lines>...
+    )
+sqlalchemy.orm.exc.De
+tachedInstanceError: 
+Instance <User at 
+0x2480fc7dc50> is 
+not bound to a 
+Session; attribute 
+refresh operation 
+cannot proceed 
+(Background on this 
+error at: https://sql
+alche.me/e/20/bhk3)
+
+---------------------
+---------------------
+---------------------
+-------
+Ran 4 tests in 7.271s
+
+FAILED (errors=2)
