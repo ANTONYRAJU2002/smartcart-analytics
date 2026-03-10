@@ -114,8 +114,8 @@ const TicketManager = () => {
                                 key={t.id}
                                 onClick={() => handleSelectTicket(t)}
                                 className={`p-3.5 border-b border-slate-100 cursor-pointer transition-all relative ${selectedTicket?.id === t.id
-                                        ? 'bg-white border-l-4 border-l-primary shadow-sm z-10 scale-[1.02]'
-                                        : 'hover:bg-white/50 border-l-4 border-l-transparent text-slate-500'
+                                    ? 'bg-white border-l-4 border-l-primary shadow-sm z-10 scale-[1.02]'
+                                    : 'hover:bg-white/50 border-l-4 border-l-transparent text-slate-500'
                                     }`}
                             >
                                 <div className="flex justify-between items-start mb-1.5">
@@ -201,8 +201,8 @@ const TicketManager = () => {
                                         <div className="text-right">
                                             <span className="block text-xs font-black text-amber-900 leading-none mb-1">₹{selectedTicket.refund.amount?.toLocaleString()}</span>
                                             <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${selectedTicket.refund.status === 'pending' ? 'bg-amber-100 text-amber-700 border-amber-200' :
-                                                    selectedTicket.refund.status === 'approved' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
-                                                        'bg-rose-100 text-rose-700 border-rose-200'
+                                                selectedTicket.refund.status === 'approved' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
+                                                    'bg-rose-100 text-rose-700 border-rose-200'
                                                 }`}>
                                                 {selectedTicket.refund.status}
                                             </span>
@@ -230,6 +230,59 @@ const TicketManager = () => {
                                 </div>
                             )}
 
+                            {/* Order Context Panel */}
+                            {selectedTicket.order_context && (
+                                <div className="mx-4 mt-4 p-4 bg-indigo-50/30 border border-indigo-100/50 rounded-xl flex gap-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <div className="flex-1">
+                                        <h4 className="text-[9px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-3">Order Context & Timeline</h4>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1">Purchased On</p>
+                                                <p className="text-[11px] font-black text-slate-700">
+                                                    {new Date(selectedTicket.order_context.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                    <span className="text-slate-400 font-medium ml-1">
+                                                        ({new Date(selectedTicket.order_context.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
+                                                    </span>
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1">Resolution Timeline</p>
+                                                <p className="text-[11px] font-black text-slate-700 flex items-center gap-1.5">
+                                                    <History size={12} className="text-indigo-400" />
+                                                    {selectedTicket.order_context.days_since_purchase_at_ticket_creation} days
+                                                    <span className="text-slate-400 font-medium">after purchase</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 border-l border-indigo-100/50 pl-6">
+                                        <h4 className="text-[9px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-3">Products Involved</h4>
+                                        <div className="space-y-2 max-h-24 overflow-y-auto custom-scrollbar pr-2">
+                                            {selectedTicket.order_context.items.map(item => (
+                                                <div key={item.id} className="flex items-center justify-between border-b border-indigo-50/50 pb-2 last:border-0 last:pb-0">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-6 h-6 rounded bg-white flex items-center justify-center border border-indigo-100 overflow-hidden shrink-0">
+                                                            {item.image_url ? (
+                                                                <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <span className="text-[6px] text-indigo-300 font-black">IMG</span>
+                                                            )}
+                                                        </div>
+                                                        <span className="text-[10px] font-black text-slate-700 line-clamp-1" title={item.name}>
+                                                            {item.name}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3 shrink-0">
+                                                        <span className="text-[9px] font-black text-slate-500">x{item.quantity}</span>
+                                                        <span className="text-[9px] font-black text-slate-900">₹{item.price.toLocaleString()}</span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Conversation */}
                             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/20 custom-scrollbar">
                                 {messages.map(m => {
@@ -249,8 +302,8 @@ const TicketManager = () => {
                                     return (
                                         <div key={m.id} className={`flex flex-col max-w-[85%] ${isAdmin ? 'self-end items-end' : 'self-start items-start'}`}>
                                             <div className={`p-3 rounded-2xl text-[11px] font-medium leading-relaxed shadow-xs ${isAdmin
-                                                    ? 'bg-slate-900 text-white rounded-tr-none'
-                                                    : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none'
+                                                ? 'bg-slate-900 text-white rounded-tr-none'
+                                                : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none'
                                                 }`}>
                                                 {m.message}
                                             </div>

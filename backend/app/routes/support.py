@@ -12,12 +12,19 @@ def create_ticket():
     current_user_id = int(get_jwt_identity())
     data = request.get_json()
     
-    if not data.get('subject') or not data.get('message'):
-        return jsonify({"msg": "Subject and message required"}), 400
+    if not data.get('inquiry_type') or not data.get('order_id') or not data.get('message'):
+        return jsonify({"msg": "Inquiry type, Order ID, and Message are required"}), 400
+
+    from app.models import Order
+    order = Order.query.filter_by(id=data['order_id'], user_id=current_user_id).first()
+    if not order:
+        return jsonify({"msg": "Order not found or does not belong to you."}), 404
+
+    subject = f"{data['inquiry_type']}: Order #{data['order_id']}"
 
     new_ticket = SupportTicket(
         user_id=current_user_id,
-        subject=data['subject']
+        subject=subject
     )
     db.session.add(new_ticket)
     db.session.commit()
@@ -97,22 +104,56 @@ def get_ticket_details(id):
             'created_at': m.created_at
         })
         
-    # Check for associated refund
+    # Check for associated refund and parse order details for contextual admin rendering
     refund_data = None
-    if "Refund Request" in ticket.subject:
-        from app.models import Refund
-        # Extract order ID from subject "Refund Request: Order #123"
+    order_data = None
+    
+    # Extract order ID from subject if formatted like "Type: Order #123"
+    import re
+    match = re.search(r"Order #(\d+)", ticket.subject)
+    
+    if match:
         try:
-            order_id = int(ticket.subject.split('#')[-1])
-            refund = Refund.query.filter_by(order_id=order_id).first()
-            if refund:
-                refund_data = {
-                    'order_id': order_id,
-                    'status': refund.status,
-                    'reason': refund.reason,
-                    'amount': refund.order.total_amount
+            order_id = int(match.group(1))
+            from app.models import Order, Refund
+            order = Order.query.get(order_id)
+            
+            if order:
+                # Calculate elapsed days since purchase
+                delta = ticket.created_at - order.timestamp
+                days_since = delta.days
+                
+                # Fetch basic product details for visual context (thumbnail/name)
+                items_info = []
+                for item in order.items:
+                    items_info.append({
+                        "id": item.product.id,
+                        "name": item.product.name,
+                        "image_url": item.product.image_url,
+                        "price": item.price_at_purchase,
+                        "quantity": item.quantity
+                    })
+                    
+                order_data = {
+                    'order_id': order.id,
+                    'timestamp': order.timestamp.isoformat(),
+                    'days_since_purchase_at_ticket_creation': days_since,
+                    'total_amount': order.total_amount,
+                    'items': items_info
                 }
-        except:
+                
+                # If this is specifically a refund
+                if "Refund Request" in ticket.subject:
+                    refund = Refund.query.filter_by(order_id=order_id).first()
+                    if refund:
+                        refund_data = {
+                            'order_id': order_id,
+                            'status': refund.status,
+                            'reason': refund.reason,
+                            'amount': order.total_amount
+                        }
+        except Exception as e:
+            print(f"Failed to parse or load contextual order details: {e}")
             pass
 
     return jsonify({
@@ -122,7 +163,8 @@ def get_ticket_details(id):
         'messages': messages,
         'user': ticket.user.username,
         'user_id': ticket.user_id,
-        'refund': refund_data
+        'refund': refund_data,
+        'order_context': order_data
     }), 200
 
 @support_bp.route('/<int:id>/action', methods=['POST'])

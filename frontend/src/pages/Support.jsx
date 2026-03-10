@@ -4,28 +4,37 @@ import { MessageSquare, Plus, Send, X, Inbox } from 'lucide-react';
 
 const Support = () => {
     const [tickets, setTickets] = useState([]);
+    const [orders, setOrders] = useState([]);
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [showNewTicketForm, setShowNewTicketForm] = useState(false);
-    const [newSubject, setNewSubject] = useState('');
+
+    // New Form Fields
+    const [inquiryType, setInquiryType] = useState('Question');
+    const [selectedOrderId, setSelectedOrderId] = useState('');
     const [newTicketMessage, setNewTicketMessage] = useState('');
+
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchTickets();
-    }, []);
-
-    const fetchTickets = async () => {
+    const fetchTicketsAndOrders = async () => {
         try {
-            const res = await api.get('/support');
-            setTickets(res.data);
+            const [ticketsRes, ordersRes] = await Promise.all([
+                api.get('/support'),
+                api.get('/orders/my')
+            ]);
+            setTickets(ticketsRes.data);
+            setOrders(ordersRes.data);
             setLoading(false);
         } catch (err) {
-            console.error("Failed to load tickets");
+            console.error("Failed to load support data");
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        fetchTicketsAndOrders();
+    }, []);
 
     const handleTicketClick = async (id) => {
         try {
@@ -53,15 +62,31 @@ const Support = () => {
 
     const handleCreateTicket = async (e) => {
         e.preventDefault();
+
+        if (!selectedOrderId) {
+            alert('Please select an order to inquire about.');
+            return;
+        }
+
         try {
-            const res = await api.post('/support', { subject: newSubject, message: newTicketMessage });
+            if (inquiryType === 'Refund Request') {
+                const res = await api.post(`/orders/${selectedOrderId}/refund`, { reason: newTicketMessage });
+                handleTicketClick(res.data.ticket_id);
+            } else {
+                const res = await api.post('/support', {
+                    inquiry_type: inquiryType,
+                    order_id: selectedOrderId,
+                    message: newTicketMessage
+                });
+                handleTicketClick(res.data.ticket_id);
+            }
             setShowNewTicketForm(false);
-            setNewSubject('');
+            setInquiryType('Question');
+            setSelectedOrderId('');
             setNewTicketMessage('');
-            fetchTickets();
-            handleTicketClick(res.data.ticket_id);
+            fetchTicketsAndOrders();
         } catch (err) {
-            alert('Failed to create ticket');
+            alert(err.response?.data?.msg || 'Failed to create ticket');
         }
     };
 
@@ -92,8 +117,8 @@ const Support = () => {
                                     key={t.id}
                                     onClick={() => handleTicketClick(t.id)}
                                     className={`p-4 border-b border-slate-50 cursor-pointer transition-all ${selectedTicket?.id === t.id
-                                            ? 'bg-white border-l-4 border-l-indigo-600 shadow-sm z-10'
-                                            : 'hover:bg-white text-slate-500 border-l-4 border-l-transparent'
+                                        ? 'bg-white border-l-4 border-l-indigo-600 shadow-sm z-10'
+                                        : 'hover:bg-white text-slate-500 border-l-4 border-l-transparent'
                                         }`}
                                 >
                                     <div className="text-[10px] font-black text-slate-400 font-mono mb-1">REQ-{t.id}</div>
@@ -132,16 +157,36 @@ const Support = () => {
                                     </button>
                                 </div>
                                 <form onSubmit={handleCreateTicket} className="max-w-xl mx-auto w-full space-y-5">
-                                    <div className="space-y-1.5">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Subject</label>
-                                        <input
-                                            type="text"
-                                            value={newSubject}
-                                            onChange={(e) => setNewSubject(e.target.value)}
-                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[11px] font-medium transition-all focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500/30"
-                                            placeholder="Nature of inquiry..."
-                                            required
-                                        />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Inquiry Type</label>
+                                            <select
+                                                value={inquiryType}
+                                                onChange={(e) => setInquiryType(e.target.value)}
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[11px] font-medium transition-all focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500/30"
+                                                required
+                                            >
+                                                <option value="Question">General Question</option>
+                                                <option value="Complaint">Complaint</option>
+                                                <option value="Refund Request">Refund Request</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Select Order</label>
+                                            <select
+                                                value={selectedOrderId}
+                                                onChange={(e) => setSelectedOrderId(e.target.value)}
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[11px] font-medium transition-all focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500/30"
+                                                required
+                                            >
+                                                <option value="" disabled>Choose an order...</option>
+                                                {orders.map(order => (
+                                                    <option key={order.id} value={order.id}>
+                                                        Order #{order.id} ({new Date(order.date).toLocaleDateString()}) - ₹{order.total}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Detailed Log</label>
@@ -195,8 +240,8 @@ const Support = () => {
                                         return (
                                             <div key={m.id} className={`flex flex-col max-w-[85%] ${isStaff ? 'self-start items-start' : 'self-end items-end'}`}>
                                                 <div className={`p-3 rounded-2xl text-[11px] font-medium leading-relaxed shadow-xs ${isStaff
-                                                        ? 'bg-white text-slate-800 rounded-tl-none border border-slate-200'
-                                                        : 'bg-indigo-600 text-white rounded-tr-none'
+                                                    ? 'bg-white text-slate-800 rounded-tl-none border border-slate-200'
+                                                    : 'bg-indigo-600 text-white rounded-tr-none'
                                                     }`}>
                                                     {m.message}
                                                 </div>
