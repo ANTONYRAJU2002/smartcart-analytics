@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
-import { MessageSquare, Plus, Send, X, Inbox } from 'lucide-react';
+import './support.css';
 
 const Support = () => {
     const [tickets, setTickets] = useState([]);
@@ -11,7 +11,7 @@ const Support = () => {
     const [showNewTicketForm, setShowNewTicketForm] = useState(false);
 
     // New Form Fields
-    const [inquiryType, setInquiryType] = useState('Question');
+    const [inquiryType, setInquiryType] = useState('General Question');
     const [selectedOrderId, setSelectedOrderId] = useState('');
     const [newTicketMessage, setNewTicketMessage] = useState('');
 
@@ -41,6 +41,7 @@ const Support = () => {
             const res = await api.get(`/support/${id}`);
             setSelectedTicket({ ...res.data, id });
             setMessages(res.data.messages);
+            setShowNewTicketForm(false);
         } catch (err) {
             console.error("Failed to load ticket details");
         }
@@ -63,8 +64,8 @@ const Support = () => {
     const handleCreateTicket = async (e) => {
         e.preventDefault();
 
-        if (!selectedOrderId) {
-            alert('Please select an order to inquire about.');
+        if ((inquiryType === 'Refund Request' || inquiryType === 'Complaint') && !selectedOrderId) {
+            alert(`Please select an order for your ${inquiryType.toLowerCase()}.`);
             return;
         }
 
@@ -75,13 +76,13 @@ const Support = () => {
             } else {
                 const res = await api.post('/support', {
                     inquiry_type: inquiryType,
-                    order_id: selectedOrderId,
+                    order_id: selectedOrderId || null,
                     message: newTicketMessage
                 });
                 handleTicketClick(res.data.ticket_id);
             }
             setShowNewTicketForm(false);
-            setInquiryType('Question');
+            setInquiryType('General Question');
             setSelectedOrderId('');
             setNewTicketMessage('');
             fetchTicketsAndOrders();
@@ -90,201 +91,199 @@ const Support = () => {
         }
     };
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-slate-400">Synchronising Support...</div>;
+    if (loading) return <div style={{textAlign: 'center', padding: '40px', fontFamily: 'Arial'}}>Loading Support...</div>;
 
     return (
-        <div className="layout-wrapper bg-slate-50/50 min-h-screen">
-            <div className="container py-8 h-[calc(100vh-140px)]">
-                <div className="flex flex-col h-full bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden lg:flex-row">
+        <div className="support-container">
+            {/* Header */}
+            {!selectedTicket && (
+                <div className="support-header">
+                    <h1>Support Tickets</h1>
+                    <p>Your inquiry history</p>
+                </div>
+            )}
 
-                    {/* Sidebar: Ticket List */}
-                    <div className="lg:w-80 border-r border-slate-100 flex flex-col bg-slate-50/30">
-                        <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-white">
-                            <div>
-                                <h2 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Your Tickets</h2>
-                                <p className="text-[8px] font-bold text-slate-400 uppercase">Support History</p>
-                            </div>
-                            <button
-                                onClick={() => setShowNewTicketForm(true)}
-                                className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center hover:bg-slate-900 transition-all shadow-sm"
-                            >
-                                <Plus size={16} />
+            {!selectedTicket ? (
+                <>
+                    {/* Tickets List or Empty State */}
+                    {tickets.length === 0 ? (
+                        <div className="ticket-card">
+                            <div className="ticket-icon">📦</div>
+                            <h3>No Support Tickets</h3>
+                            <p>You don't have any active inquiries at the moment.</p>
+                            <button className="primary-btn" onClick={() => setShowNewTicketForm(true)}>
+                                + Create New Ticket
                             </button>
                         </div>
-                        <div className="flex-1 overflow-y-auto custom-scrollbar">
-                            {tickets.map(t => (
-                                <div
-                                    key={t.id}
-                                    onClick={() => handleTicketClick(t.id)}
-                                    className={`p-4 border-b border-slate-50 cursor-pointer transition-all ${selectedTicket?.id === t.id
-                                        ? 'bg-white border-l-4 border-l-indigo-600 shadow-sm z-10'
-                                        : 'hover:bg-white text-slate-500 border-l-4 border-l-transparent'
-                                        }`}
-                                >
-                                    <div className="text-[10px] font-black text-slate-400 font-mono mb-1">REQ-{t.id}</div>
-                                    <div className="font-black text-slate-800 text-[11px] truncate mb-1.5">{t.subject}</div>
-                                    <div className="flex justify-between items-center">
-                                        <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${t.status === 'open' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-100 text-slate-400'
-                                            }`}>
-                                            {t.status}
-                                        </span>
-                                        <span className="text-[8px] font-bold text-slate-300">
-                                            {new Date(t.created_at).toLocaleDateString()}
-                                        </span>
+                    ) : (
+                        <div className="form-card" style={{ marginBottom: '30px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #ddd', paddingBottom: '15px', marginBottom: '15px' }}>
+                                <h2 style={{ margin: 0 }}>Your Tickets</h2>
+                                <button className="primary-btn" style={{ marginTop: 0 }} onClick={() => setShowNewTicketForm(true)}>
+                                    + New Ticket
+                                </button>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {tickets.map(t => (
+                                    <div key={t.id} onClick={() => handleTicketClick(t.id)} style={{ padding: '15px', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                            <div style={{ fontWeight: '600', marginBottom: '5px' }}>REQ-{t.id} - {t.subject}</div>
+                                                <div style={{ fontSize: '12px', color: '#666' }}>{new Date(t.created_at).toLocaleDateString()}</div>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                {t.admin_unread_count > 0 && (
+                                                    <div style={{ display: 'flex', alignItems: 'center', background: '#fee2e2', color: '#dc2626', padding: '4px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}>
+                                                        <span style={{ marginRight: '4px' }}>🔔</span>
+                                                        {t.admin_unread_count} New
+                                                    </div>
+                                                )}
+                                                <span style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', padding: '4px 8px', borderRadius: '12px', background: t.status === 'open' ? '#d1fae5' : '#f1f5f9', color: t.status === 'open' ? '#065f46' : '#64748b' }}>
+                                                    {t.status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Create Inquiry */}
+                    {(showNewTicketForm || tickets.length === 0) && (
+                        <div className="form-card">
+                            <h2>Create New Inquiry</h2>
+                            <p>We're here to help. Fill out the form below and our support team will get back to you shortly.</p>
+
+                            <form onSubmit={handleCreateTicket}>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>Inquiry Type</label>
+                                        <select value={inquiryType} onChange={(e) => setInquiryType(e.target.value)} required>
+                                            <option value="General Question">General Question</option>
+                                            <option value="Complaint">Complaint</option>
+                                            <option value="Refund Request">Refund Request</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Select Order</label>
+                                        <select 
+                                            value={selectedOrderId} 
+                                            onChange={(e) => setSelectedOrderId(e.target.value)} 
+                                            required={inquiryType === 'Refund Request' || inquiryType === 'Complaint'}
+                                        >
+                                            <option value="">
+                                                {inquiryType === 'Refund Request' || inquiryType === 'Complaint' ? 'Choose an order...' : 'None / Not related to a specific order'}
+                                            </option>
+                                            {orders && orders.length > 0 && orders.map((order) => {
+                                                const productNames = order.items && order.items.length > 0 
+                                                    ? order.items.map(i => i.name || `Product #${i.product_id}`).join(', ') 
+                                                    : 'Unknown Product';
+                                                return (
+                                                    <option key={order.id} value={order.id}>
+                                                        Order #{order.id} - {productNames} ({new Date(order.date).toLocaleDateString()})
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
                                     </div>
                                 </div>
-                            ))}
-                            {tickets.length === 0 && (
-                                <div className="p-8 text-center text-slate-300 flex flex-col items-center">
-                                    <Inbox size={32} className="mb-2 opacity-20" />
-                                    <span className="text-[9px] font-black uppercase tracking-widest">No active tickets</span>
+
+                                <div className="form-group">
+                                    <label>How can we help you?</label>
+                                    <textarea 
+                                        value={newTicketMessage} 
+                                        onChange={(e) => setNewTicketMessage(e.target.value)}
+                                        placeholder="Please provide details about your issue, error messages, or questions..." 
+                                        required
+                                    />
                                 </div>
-                            )}
+
+                                <button type="submit" className="primary-btn">
+                                    Submit Ticket
+                                </button>
+                            </form>
                         </div>
+                    )}
+                </>
+            ) : (
+                <div className="form-card" style={{ display: 'flex', flexDirection: 'column', height: '70vh' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #ddd', paddingBottom: '15px', marginBottom: '15px' }}>
+                        <div>
+                            <button onClick={() => setSelectedTicket(null)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', padding: 0, marginBottom: '10px', fontSize: '14px' }}>&larr; Back to tickets</button>
+                            <h2 style={{ margin: 0 }}>{selectedTicket.subject}</h2>
+                            <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>REQ-{selectedTicket.id} • {selectedTicket.status.toUpperCase()}</div>
+                        </div>
+                        <button 
+                            onClick={() => setSelectedTicket(null)}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#999',
+                                cursor: 'pointer',
+                                fontSize: '24px',
+                                padding: '0 5px',
+                                lineHeight: '1',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                            title="Close Chat"
+                        >
+                            &times;
+                        </button>
                     </div>
 
-                    {/* Main Area */}
-                    <div className="flex-1 flex flex-col bg-white relative">
-                        {showNewTicketForm ? (
-                            <div className="absolute inset-0 z-20 bg-white p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="flex justify-between items-center mb-8">
-                                    <div>
-                                        <h2 className="text-xl font-black text-slate-900 tracking-tight">Open New Inquiry</h2>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hardware Support Request</p>
+                    <div style={{ flex: 1, overflowY: 'auto', padding: '10px 0', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        {messages.map((m, index) => {
+                            const isStaff = m.sender === 'staff' || m.sender_id !== selectedTicket.user_id;
+                            const isSystem = m.message.startsWith('[SYSTEM]');
+                            
+                            if (isSystem) {
+                                return (
+                                    <div key={m.id || index} style={{ textAlign: 'center', margin: '10px 0' }}>
+                                        <span style={{ background: '#f1f5f9', color: '#64748b', fontSize: '11px', padding: '4px 12px', borderRadius: '12px', textTransform: 'uppercase', fontWeight: 'bold' }}>
+                                            {m.message.replace('[SYSTEM]', '').trim()}
+                                        </span>
                                     </div>
-                                    <button onClick={() => setShowNewTicketForm(false)} className="text-slate-300 hover:text-slate-900 transition-colors">
-                                        <X size={24} />
-                                    </button>
-                                </div>
-                                <form onSubmit={handleCreateTicket} className="max-w-xl mx-auto w-full space-y-5">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Inquiry Type</label>
-                                            <select
-                                                value={inquiryType}
-                                                onChange={(e) => setInquiryType(e.target.value)}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[11px] font-medium transition-all focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500/30"
-                                                required
-                                            >
-                                                <option value="Question">General Question</option>
-                                                <option value="Complaint">Complaint</option>
-                                                <option value="Refund Request">Refund Request</option>
-                                            </select>
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Select Order</label>
-                                            <select
-                                                value={selectedOrderId}
-                                                onChange={(e) => setSelectedOrderId(e.target.value)}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[11px] font-medium transition-all focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500/30"
-                                                required
-                                            >
-                                                <option value="" disabled>Choose an order...</option>
-                                                {orders.map(order => (
-                                                    <option key={order.id} value={order.id}>
-                                                        Order #{order.id} ({new Date(order.date).toLocaleDateString()}) - ₹{order.total}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
+                                );
+                            }
+
+                            return (
+                                <div key={m.id || index} style={{ alignSelf: isStaff ? 'flex-start' : 'flex-end', maxWidth: '75%' }}>
+                                    <div style={{ fontSize: '12px', color: '#666', marginBottom: '4px', textAlign: isStaff ? 'left' : 'right' }}>
+                                        {isStaff ? 'Support Team' : 'You'} • {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Detailed Log</label>
-                                        <textarea
-                                            value={newTicketMessage}
-                                            onChange={(e) => setNewTicketMessage(e.target.value)}
-                                            rows="5"
-                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[11px] font-medium transition-all focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500/30"
-                                            placeholder="Provide technical details, order IDs, or specific issues..."
-                                            required
-                                        ></textarea>
-                                    </div>
-                                    <button type="submit" className="w-full bg-slate-900 text-white py-3.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95">
-                                        Transmit Request
-                                    </button>
-                                </form>
-                            </div>
-                        ) : selectedTicket ? (
-                            <>
-                                {/* Chat Header */}
-                                <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-white shadow-xs z-10">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
-                                            <MessageSquare size={18} />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-[12px] font-black text-slate-900 leading-none mb-1">{selectedTicket.subject}</h3>
-                                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-                                                REQ-{selectedTicket.id} • Status: {selectedTicket.status}
-                                            </p>
-                                        </div>
+                                    <div style={{ 
+                                        background: isStaff ? '#f8fafc' : '#4f46e5', 
+                                        color: isStaff ? '#333' : 'white', 
+                                        padding: '12px 16px', 
+                                        borderRadius: '12px', 
+                                        borderTopLeftRadius: isStaff ? '4px' : '12px',
+                                        borderTopRightRadius: isStaff ? '12px' : '4px',
+                                        fontSize: '14px',
+                                        border: isStaff ? '1px solid #e2e8f0' : 'none'
+                                    }}>
+                                        {m.message}
                                     </div>
                                 </div>
+                            );
+                        })}
+                    </div>
 
-                                {/* Messages */}
-                                <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/20 custom-scrollbar">
-                                    {messages.map(m => {
-                                        const isStaff = m.sender === 'staff' || m.sender_id !== selectedTicket.user_id;
-                                        const isSystem = m.message.startsWith('[SYSTEM]');
-
-                                        if (isSystem) {
-                                            return (
-                                                <div key={m.id} className="flex justify-center py-2">
-                                                    <div className="px-4 py-1.5 bg-slate-900/5 border border-slate-900/10 rounded-full text-[9px] font-black text-slate-500 uppercase tracking-widest italic">
-                                                        {m.message.replace('[SYSTEM]', '').trim()}
-                                                    </div>
-                                                </div>
-                                            );
-                                        }
-
-                                        return (
-                                            <div key={m.id} className={`flex flex-col max-w-[85%] ${isStaff ? 'self-start items-start' : 'self-end items-end'}`}>
-                                                <div className={`p-3 rounded-2xl text-[11px] font-medium leading-relaxed shadow-xs ${isStaff
-                                                    ? 'bg-white text-slate-800 rounded-tl-none border border-slate-200'
-                                                    : 'bg-indigo-600 text-white rounded-tr-none'
-                                                    }`}>
-                                                    {m.message}
-                                                </div>
-                                                <div className="mt-1 px-1 flex items-center gap-2">
-                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">
-                                                        {isStaff ? 'Official Support' : 'You'}
-                                                    </span>
-                                                    <span className="text-[8px] font-bold text-slate-300">
-                                                        {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-
-                                {/* Reply Input */}
-                                <div className="p-4 bg-white border-t border-slate-100">
-                                    <form onSubmit={handleSendMessage} className="flex gap-3">
-                                        <input
-                                            type="text"
-                                            value={newMessage}
-                                            onChange={(e) => setNewMessage(e.target.value)}
-                                            placeholder="Response transmission..."
-                                            className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-5 py-2.5 text-[11px] font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                                        />
-                                        <button type="submit" className="w-11 h-11 bg-slate-900 text-white rounded-xl flex items-center justify-center hover:bg-slate-800 transition-all shadow-md hover:shadow-lg active:scale-95">
-                                            <Send size={18} />
-                                        </button>
-                                    </form>
-                                </div>
-                            </>
-                        ) : (
-                            <div className="flex flex-col items-center justify-center h-full text-slate-300 bg-slate-50/10">
-                                <div className="w-16 h-16 rounded-full bg-white border border-slate-100 flex items-center justify-center mb-4 shadow-sm animate-pulse">
-                                    <MessageSquare size={24} className="opacity-30" />
-                                </div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em]">Select Inquiry for Resolution</p>
-                            </div>
-                        )}
+                    <div style={{ borderTop: '1px solid #ddd', paddingTop: '15px', marginTop: '15px' }}>
+                        <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: '10px' }}>
+                            <input 
+                                type="text" 
+                                value={newMessage} 
+                                onChange={(e) => setNewMessage(e.target.value)} 
+                                placeholder="Type your message here..." 
+                                style={{ flex: 1, padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px' }}
+                            />
+                            <button type="submit" disabled={!newMessage.trim()} className="primary-btn" style={{ margin: 0 }}>Send</button>
+                        </form>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useCart } from '../context/CartContext';
-import { CreditCard, MapPin, Truck, CheckCircle, Plus, Trash2, Lock, Smartphone, ArrowRight, ChevronLeft } from 'lucide-react';
+import { Trash2, CheckCircle, Plus, ArrowRight, ChevronLeft } from 'lucide-react';
+import './Checkout.css';
 
 const Checkout = () => {
     const { cart, cartTotal, clearCart } = useCart();
@@ -31,6 +32,7 @@ const Checkout = () => {
     // Profile State (Customer Number)
     const [phoneNumber, setPhoneNumber] = useState('');
     const [originalPhoneNumber, setOriginalPhoneNumber] = useState('');
+    const [isEditingPhone, setIsEditingPhone] = useState(false);
 
     // Inline Address State
     const [isAddingAddress, setIsAddingAddress] = useState(false);
@@ -77,7 +79,7 @@ const Checkout = () => {
             setSelectedAddress(res.data.id);
             setIsAddingAddress(false);
             setNewAddress({ street: '', city: '', state: '', zip_code: '', country: '', is_default: false });
-        } catch (err) {
+        } catch {
             alert('Failed to add address');
         }
     };
@@ -90,7 +92,7 @@ const Checkout = () => {
                 setSelectedAddress(null);
             }
             fetchAddressesAndProfile();
-        } catch (err) {
+        } catch {
             alert('Failed to delete address');
         }
     };
@@ -111,6 +113,11 @@ const Checkout = () => {
         e.preventDefault();
         if (!selectedAddress) {
             alert('Please select a shipping address');
+            return;
+        }
+
+        if (checkoutStep !== 2) {
+            handleContinueToPayment();
             return;
         }
 
@@ -160,323 +167,246 @@ const Checkout = () => {
         }
     };
 
+    const formatCurrency = (val) => `₹${Number(val).toLocaleString('en-IN')}`;
+
     if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
 
     if (checkoutItems.length === 0) {
         return (
-            <div className="layout-wrapper flex items-center justify-center">
-                <div className="text-center">
+            <div className="checkout-page-wrapper flex items-center justify-center">
+                <div className="checkout-card text-center" style={{ maxWidth: '400px' }}>
                     <h1 className="text-2xl font-bold mb-4">Cart is Empty</h1>
-                    <button onClick={() => navigate('/products')} className="btn btn-primary rounded-full px-6 py-2">Browse Products</button>
+                    <button onClick={() => navigate('/products')} className="checkout-continue-btn">Browse Products</button>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="layout-wrapper bg-slate-50 min-h-screen">
-            <div className="container py-12 max-w-6xl">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Checkout</h1>
-                    <p className="text-slate-500 mt-1">Choose your payment method and delivery address</p>
-                </div>
+        <div className="checkout-page-wrapper">
+            <div className="checkout-container">
+                
+                {/* LEFT SIDE */}
+                <div className="checkout-left">
+                    <h1>Checkout</h1>
+                    <p className="checkout-sub">Choose your payment method and delivery address</p>
 
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
-                    {/* Left Column: Flow Content */}
-                    <div className="space-y-6">
+                    {checkoutStep === 2 && (
+                        <button 
+                            onClick={() => setCheckoutStep(1)}
+                            className="mb-4 flex items-center gap-2 text-blue-600 font-bold cursor-pointer bg-transparent border-none p-0"
+                        >
+                            <ChevronLeft size={20} /> Back to Address
+                        </button>
+                    )}
 
-                        {/* STEP 1: CONTACT & ADDRESS */}
-                        {checkoutStep === 1 && (
-                            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                {/* Contact Info */}
-                                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
-                                    <h2 className="text-lg font-bold mb-6 text-slate-800 tracking-tight">Contact Information</h2>
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">Mobile Number</label>
-                                        <input
-                                            type="tel"
-                                            placeholder="Enter your 10-digit mobile number"
-                                            value={phoneNumber}
-                                            onChange={e => setPhoneNumber(e.target.value)}
-                                            className="w-full bg-slate-50 border-none rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 font-medium transition-shadow"
-                                        />
-                                    </div>
+                    {/* STEP 1: CONTACT & ADDRESS */}
+                    {checkoutStep === 1 ? (
+                        <div className="animate-in fade-in duration-500">
+                            {/* CONTACT */}
+                            <div className="checkout-card">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 style={{ margin: 0 }}>Contact Information</h3>
+                                    {!isEditingPhone ? (
+                                        <button 
+                                            onClick={() => setIsEditingPhone(true)}
+                                            className="text-blue-600 font-bold bg-transparent border-none p-0 cursor-pointer text-sm"
+                                        >
+                                            ✏ Edit
+                                        </button>
+                                    ) : (
+                                        <button 
+                                            onClick={() => setIsEditingPhone(false)}
+                                            className="text-green-600 font-bold bg-transparent border-none p-0 cursor-pointer text-sm"
+                                        >
+                                            ✅ Done
+                                        </button>
+                                    )}
                                 </div>
+                                <div className="checkout-input-box">
+                                    📞 {isEditingPhone ? (
+                                        <input 
+                                            type="text" 
+                                            placeholder="Phone number" 
+                                            value={phoneNumber} 
+                                            onChange={e => setPhoneNumber(e.target.value)}
+                                            autoFocus
+                                        />
+                                    ) : (
+                                        <span className="font-bold text-slate-700">{phoneNumber || 'Not provided'}</span>
+                                    )}
+                                </div>
+                            </div>
 
-                                {/* Address Selection */}
-                                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
-                                    <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800">
-                                        Shipping Address
-                                    </h2>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {addresses.map(addr => (
-                                            <div
-                                                key={addr.id}
-                                                onClick={() => setSelectedAddress(addr.id)}
-                                                className={`p-4 rounded-xl border cursor-pointer transition-all relative group ${selectedAddress === addr.id
-                                                    ? 'border-indigo-500 bg-indigo-50/50 ring-1 ring-indigo-500 shadow-sm'
-                                                    : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                                                    }`}
-                                            >
-                                                <p className="font-bold text-slate-800 mb-1">{addr.street}</p>
-                                                <p className="text-sm text-slate-600">{addr.city}, {addr.zip_code}</p>
-                                                <p className="text-sm text-slate-600">{addr.state}, {addr.country}</p>
-
-                                                {/* Actions */}
-                                                <div className="absolute top-4 right-4 flex items-center gap-2">
-                                                    <button
-                                                        onClick={(e) => handleDeleteAddress(e, addr.id)}
-                                                        className={`p-1.5 rounded-md hover:bg-rose-100 hover:text-rose-600 transition-colors ${selectedAddress === addr.id ? 'opacity-100 text-slate-400' : 'opacity-0 group-hover:opacity-100 text-slate-400'}`}
-                                                        title="Delete address"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                    {selectedAddress === addr.id && (
-                                                        <div className="text-indigo-600 bg-white rounded-full">
-                                                            <CheckCircle size={20} className="fill-indigo-100" />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))}
-
-                                        {!isAddingAddress && (
-                                            <div
-                                                onClick={() => setIsAddingAddress(true)}
-                                                className="p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all text-slate-500 hover:text-indigo-600 min-h-[140px]"
-                                            >
-                                                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
-                                                    <Plus size={20} />
-                                                </div>
-                                                <span className="font-medium">Add New Address</span>
-                                            </div>
+                            {/* ADDRESSES */}
+                            <h3>Shipping Address</h3>
+                            {addresses.map(addr => (
+                                <div 
+                                    key={addr.id} 
+                                    className={`checkout-card ${selectedAddress === addr.id ? 'selected-address-card' : ''}`}
+                                    onClick={() => setSelectedAddress(addr.id)}
+                                    style={{ cursor: 'pointer', position: 'relative' }}
+                                >
+                                    <div className="flex justify-between items-start">
+                                        <p className="checkout-address-text">
+                                            📍 <strong>{addr.street}</strong> <br />
+                                            {addr.city}, {addr.zip_code} <br />
+                                            {addr.state}, {addr.country}
+                                        </p>
+                                        {selectedAddress === addr.id && (
+                                            <CheckCircle size={24} className="text-blue-600 fill-blue-50" />
                                         )}
                                     </div>
 
-                                    {/* Inline Add Address Form */}
-                                    {isAddingAddress && (
-                                        <form onSubmit={handleAddAddress} className="mt-6 p-5 border border-slate-200 rounded-xl bg-slate-50/50">
-                                            <h3 className="font-bold text-slate-800 mb-4">Enter New Address</h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                                <div className="md:col-span-2">
-                                                    <label className="form-label">Street Address</label>
-                                                    <input required type="text" className="form-input bg-white" value={newAddress.street} onChange={e => setNewAddress({ ...newAddress, street: e.target.value })} />
-                                                </div>
-                                                <div>
-                                                    <label className="form-label">City</label>
-                                                    <input required type="text" className="form-input bg-white" value={newAddress.city} onChange={e => setNewAddress({ ...newAddress, city: e.target.value })} />
-                                                </div>
-                                                <div>
-                                                    <label className="form-label">State</label>
-                                                    <input required type="text" className="form-input bg-white" value={newAddress.state} onChange={e => setNewAddress({ ...newAddress, state: e.target.value })} />
-                                                </div>
-                                                <div>
-                                                    <label className="form-label">ZIP / Postal Code</label>
-                                                    <input required type="text" className="form-input bg-white" value={newAddress.zip_code} onChange={e => setNewAddress({ ...newAddress, zip_code: e.target.value })} />
-                                                </div>
-                                                <div>
-                                                    <label className="form-label">Country</label>
-                                                    <input required type="text" className="form-input bg-white" value={newAddress.country} onChange={e => setNewAddress({ ...newAddress, country: e.target.value })} />
-                                                </div>
-                                            </div>
-                                            <div className="flex justify-end gap-3 mt-6">
-                                                <button type="button" onClick={() => setIsAddingAddress(false)} className="btn btn-secondary">Cancel</button>
-                                                <button type="submit" className="btn btn-primary">Save Address</button>
-                                            </div>
-                                        </form>
-                                    )}
+                                    <div className="checkout-actions">
+                                        <button className="checkout-edit-btn" onClick={(e) => { e.stopPropagation(); /* Edit logic could go here */ }}>✏ Edit</button>
+                                        <button className="checkout-delete-btn" onClick={(e) => handleDeleteAddress(e, addr.id)}>🗑 Delete</button>
+                                    </div>
                                 </div>
+                            ))}
 
-                                <button
-                                    onClick={handleContinueToPayment}
-                                    className="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-xl flex items-center justify-center gap-2 font-bold text-lg shadow-lg hover:shadow-xl transition-all active:scale-[0.98]"
-                                >
-                                    Continue to Payment <ArrowRight size={20} />
-                                </button>
-                            </div>
-                        )}
+                            {/* ADD NEW */}
+                            {!isAddingAddress ? (
+                                <div className="checkout-card checkout-add-card" onClick={() => setIsAddingAddress(true)}>
+                                    + Add New Address
+                                </div>
+                            ) : (
+                                <div className="checkout-card">
+                                    <h3>New Address</h3>
+                                    <form onSubmit={handleAddAddress} className="space-y-4">
+                                        <div className="checkout-input-box">
+                                            <input required type="text" placeholder="Street Address" value={newAddress.street} onChange={e => setNewAddress({ ...newAddress, street: e.target.value })} />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="checkout-input-box">
+                                                <input required type="text" placeholder="City" value={newAddress.city} onChange={e => setNewAddress({ ...newAddress, city: e.target.value })} />
+                                            </div>
+                                            <div className="checkout-input-box">
+                                                <input required type="text" placeholder="State" value={newAddress.state} onChange={e => setNewAddress({ ...newAddress, state: e.target.value })} />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="checkout-input-box">
+                                                <input required type="text" placeholder="ZIP Code" value={newAddress.zip_code} onChange={e => setNewAddress({ ...newAddress, zip_code: e.target.value })} />
+                                            </div>
+                                            <div className="checkout-input-box">
+                                                <input required type="text" placeholder="Country" value={newAddress.country} onChange={e => setNewAddress({ ...newAddress, country: e.target.value })} />
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-3 mt-4">
+                                            <button 
+                                                type="button" 
+                                                onClick={() => setIsAddingAddress(false)}
+                                                className="checkout-edit-btn p-3 rounded-lg flex-1 font-bold"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button 
+                                                type="submit" 
+                                                className="checkout-continue-btn p-3 rounded-lg flex-1"
+                                                style={{ width: 'auto' }}
+                                            >
+                                                Save
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            )}
 
-                        {/* STEP 2: PAYMENT OVERVIEW */}
-                        {checkoutStep === 2 && (
-                            <div className="animate-in fade-in slide-in-from-right-8 duration-500">
-                                <button
-                                    onClick={() => setCheckoutStep(1)}
-                                    className="mb-6 flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-medium transition-colors"
-                                >
-                                    <ChevronLeft size={18} /> Back to Address
-                                </button>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                                    <button
-                                        onClick={() => setSelectedPayment('gpay')}
-                                        className={`py-4 px-6 rounded-2xl flex items-center justify-center gap-3 font-semibold transition-all border ${selectedPayment === 'gpay'
-                                            ? 'border-indigo-500 bg-indigo-50/50 text-indigo-700 ring-1 ring-indigo-500 shadow-sm'
-                                            : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
-                                            }`}
+                            <button className="checkout-continue-btn" onClick={handleContinueToPayment}>
+                                Continue to Payment →
+                            </button>
+                        </div>
+                    ) : (
+                        /* STEP 2: PAYMENT OVERVIEW */
+                        <div className="animate-in fade-in duration-500">
+                            <div className="checkout-card">
+                                <h3>Payment Method</h3>
+                                <div className="flex gap-4 mb-6">
+                                    <button 
+                                        onClick={() => setSelectedPayment('card')}
+                                        className={`flex-1 p-4 rounded-xl border-2 font-bold transition-all ${selectedPayment === 'card' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-100 bg-slate-50 text-slate-500'}`}
                                     >
-                                        <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-700 text-sm">G</div>
-                                        Google Pay
+                                        💳 Card
                                     </button>
-                                    <button
+                                    <button 
                                         onClick={() => setSelectedPayment('upi')}
-                                        className={`py-4 px-6 rounded-2xl flex items-center justify-center gap-3 font-semibold transition-all border ${selectedPayment === 'upi'
-                                            ? 'border-indigo-500 bg-indigo-50/50 text-indigo-700 ring-1 ring-indigo-500 shadow-sm'
-                                            : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
-                                            }`}
+                                        className={`flex-1 p-4 rounded-xl border-2 font-bold transition-all ${selectedPayment === 'upi' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-100 bg-slate-50 text-slate-500'}`}
                                     >
-                                        <Smartphone size={20} className={selectedPayment === 'upi' ? 'text-indigo-600' : 'text-slate-500'} />
-                                        PhonePe / UPI
+                                        📱 UPI
                                     </button>
                                 </div>
 
-                                <div className="flex items-center gap-4 mb-6">
-                                    <div className="flex-1 h-px bg-slate-200"></div>
-                                    <span className="text-xs font-bold text-slate-400 tracking-widest uppercase">Or Pay With Card</span>
-                                    <div className="flex-1 h-px bg-slate-200"></div>
-                                </div>
-
-                                {selectedPayment === 'card' && (
-                                    <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm relative overflow-hidden">
-                                        <div className="flex items-center justify-between mb-8">
-                                            <div className="flex items-center gap-3 text-slate-800 font-bold">
-                                                <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
-                                                    <CreditCard size={20} />
-                                                </div>
-                                                Credit / Debit Card
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <div className="px-2 py-1 bg-slate-100 text-[10px] font-black tracking-wider text-slate-500 rounded">VISA</div>
-                                                <div className="px-2 py-1 bg-slate-100 text-[10px] font-black tracking-wider text-slate-500 rounded">MC</div>
-                                            </div>
+                                {selectedPayment === 'card' ? (
+                                    <div className="space-y-4">
+                                        <div className="checkout-input-box">
+                                            <input type="text" placeholder="Card Number" value={cardDetails.number} onChange={e => setCardDetails({...cardDetails, number: e.target.value})} />
                                         </div>
-
-                                        <div className="space-y-5">
-                                            <div>
-                                                <label className="block text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">Cardholder Name</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="John Doe"
-                                                    value={cardDetails.name}
-                                                    onChange={e => setCardDetails({ ...cardDetails, name: e.target.value })}
-                                                    className="w-full bg-slate-50 border-none rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 font-medium transition-shadow"
-                                                />
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="checkout-input-box">
+                                                <input type="text" placeholder="MM/YY" value={cardDetails.expiry} onChange={e => setCardDetails({...cardDetails, expiry: e.target.value})} />
                                             </div>
-                                            <div>
-                                                <label className="block text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">Card Number</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="4242 4242 4242 4242"
-                                                    value={cardDetails.number}
-                                                    onChange={e => setCardDetails({ ...cardDetails, number: e.target.value })}
-                                                    className="w-full bg-slate-50 border-none rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 font-medium font-mono text-lg tracking-widest transition-shadow"
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-5">
-                                                <div>
-                                                    <label className="block text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">Expiry</label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="MM/YY"
-                                                        value={cardDetails.expiry}
-                                                        onChange={e => setCardDetails({ ...cardDetails, expiry: e.target.value })}
-                                                        className="w-full bg-slate-50 border-none rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 font-medium tracking-wide transition-shadow"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">CVV</label>
-                                                    <input
-                                                        type="password"
-                                                        placeholder="•••"
-                                                        value={cardDetails.cvv}
-                                                        onChange={e => setCardDetails({ ...cardDetails, cvv: e.target.value })}
-                                                        className="w-full bg-slate-50 border-none rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 font-medium tracking-widest transition-shadow"
-                                                    />
-                                                </div>
+                                            <div className="checkout-input-box">
+                                                <input type="password" placeholder="CVV" value={cardDetails.cvv} onChange={e => setCardDetails({...cardDetails, cvv: e.target.value})} />
                                             </div>
                                         </div>
                                     </div>
-                                )}
-
-                                {(selectedPayment === 'gpay' || selectedPayment === 'upi') && (
-                                    <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm relative overflow-hidden">
-                                        <div className="flex items-center justify-between mb-8">
-                                            <div className="flex items-center gap-3 text-slate-800 font-bold">
-                                                <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
-                                                    {selectedPayment === 'gpay' ? (
-                                                        <span className="font-bold">G</span>
-                                                    ) : (
-                                                        <Smartphone size={20} />
-                                                    )}
-                                                </div>
-                                                {selectedPayment === 'gpay' ? 'Google Pay' : 'PhonePe / UPI'}
-                                            </div>
-                                            <div className="px-3 py-1 bg-green-100 text-[10px] font-black tracking-wider text-green-700 rounded-full flex gap-1 items-center">
-                                                <CheckCircle size={10} /> SECURE
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-5">
-                                            <div>
-                                                <label className="block text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">Enter your UPI ID</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="e.g. jondoe@oksbi or 9876543210@ybl"
-                                                    value={upiId}
-                                                    onChange={e => setUpiId(e.target.value)}
-                                                    className="w-full bg-slate-50 border-none rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 font-medium transition-shadow"
-                                                />
-                                            </div>
-                                            <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 text-sm text-indigo-700 flex gap-3 items-start">
-                                                <Smartphone className="mt-0.5 shrink-0" size={16} />
-                                                <p>Enter your Virtual Payment Address (VPA). Your payment will be simulated right away securely.</p>
-                                            </div>
-                                        </div>
+                                ) : (
+                                    <div className="checkout-input-box">
+                                        <input type="text" placeholder="Enter UPI ID (e.g. name@upi)" value={upiId} onChange={e => setUpiId(e.target.value)} />
                                     </div>
                                 )}
-
-                                <button
-                                    onClick={handlePlaceOrder}
-                                    disabled={placingOrder}
-                                    className={`w-full mt-6 bg-[#7c3aed] hover:bg-[#6d28d9] text-white py-4 rounded-xl flex items-center justify-center gap-2 font-bold text-lg shadow-lg hover:shadow-xl transition-all active:scale-[0.98] ${placingOrder ? 'opacity-70 cursor-not-allowed' : ''}`}
-                                >
-                                    <Lock size={18} /> {placingOrder ? 'Processing...' : 'Place Order'}
-                                </button>
                             </div>
-                        )}
+                            
+                            <div className="checkout-card">
+                                <h3>Delivery Contact</h3>
+                                <div className="checkout-input-box">
+                                    📞 <strong>{phoneNumber}</strong>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-2">Order updates will be sent to this number.</p>
+                            </div>
+
+                            <button className="checkout-continue-btn" onClick={handlePlaceOrder} disabled={placingOrder}>
+                                {placingOrder ? 'Processing...' : 'Place Order'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {/* RIGHT SIDE (SUMMARY) */}
+                <div className="checkout-right">
+                    <h3>Order Summary</h3>
+
+                    {checkoutItems.map((item, idx) => (
+                        <div key={`${item.id}-${idx}`} className="mb-4">
+                            <div className="checkout-row">
+                                <span>{item.name}</span>
+                                <span>{formatCurrency(item.price * item.quantity)}</span>
+                            </div>
+                            <p className="checkout-qty-info">Qty: {item.quantity}</p>
+                        </div>
+                    ))}
+
+                    <hr className="checkout-hr" />
+
+                    <div className="checkout-row">
+                        <span>Subtotal</span>
+                        <span>{formatCurrency(checkoutTotal)}</span>
                     </div>
 
-                    {/* Right Column: Order Summary */}
-                    <div className="lg:col-span-1">
-                        <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm sticky top-24">
-                            <h2 className="text-lg font-bold mb-6 text-slate-800 tracking-tight">Order Summary</h2>
-                            <div className="flex flex-col gap-4 mb-6">
-                                {checkoutItems.map(item => (
-                                    <div key={item.id} className="flex justify-between items-start">
-                                        <div>
-                                            <p className="font-semibold text-slate-800 text-sm leading-tight">{item.name}</p>
-                                            <p className="text-xs text-slate-500 mt-1">Qty: {item.quantity}</p>
-                                        </div>
-                                        <span className="font-bold text-slate-700 text-sm">₹{(Number(item.price) * item.quantity).toFixed(0)}</span>
-                                    </div>
-                                ))}
-                            </div>
+                    <div className="checkout-row">
+                        <span>Shipping</span>
+                        <span className="checkout-free-text">Free</span>
+                    </div>
 
-                            <div className="border-t border-slate-100 pt-5 space-y-3 mb-5">
-                                <div className="flex justify-between text-sm text-slate-500">
-                                    <span>Subtotal</span>
-                                    <span>₹{checkoutTotal.toFixed(0)}</span>
-                                </div>
-                            </div>
+                    <hr className="checkout-hr" />
 
-                            <div className="border-t border-slate-100 pt-5">
-                                <div className="flex justify-between items-baseline">
-                                    <span className="text-lg font-black text-slate-800">Total</span>
-                                    <span className="text-2xl font-black text-indigo-600">₹{checkoutTotal.toFixed(0)}</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div className="checkout-total-row">
+                        <span>Total</span>
+                        <span>{formatCurrency(checkoutTotal)}</span>
                     </div>
                 </div>
+
             </div>
         </div>
     );

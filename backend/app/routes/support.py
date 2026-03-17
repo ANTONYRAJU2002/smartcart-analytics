@@ -6,21 +6,28 @@ from datetime import datetime
 
 support_bp = Blueprint('support', __name__)
 
-@support_bp.route('/', methods=['POST'])
+@support_bp.route('/', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def create_ticket():
     current_user_id = int(get_jwt_identity())
     data = request.get_json()
     
-    if not data.get('inquiry_type') or not data.get('order_id') or not data.get('message'):
-        return jsonify({"msg": "Inquiry type, Order ID, and Message are required"}), 400
+    if not data.get('inquiry_type') or not data.get('message'):
+        return jsonify({"msg": "Inquiry type and Message are required"}), 400
 
-    from app.models import Order
-    order = Order.query.filter_by(id=data['order_id'], user_id=current_user_id).first()
-    if not order:
-        return jsonify({"msg": "Order not found or does not belong to you."}), 404
+    order_id = data.get('order_id')
+    
+    if data.get('inquiry_type') in ['Refund Request', 'Complaint'] and not order_id:
+        return jsonify({"msg": f"Order ID is required for a {data.get('inquiry_type').lower()}"}), 400
 
-    subject = f"{data['inquiry_type']}: Order #{data['order_id']}"
+    if order_id:
+        from app.models import Order
+        order = Order.query.filter_by(id=order_id, user_id=current_user_id).first()
+        if not order:
+            return jsonify({"msg": "Order not found or does not belong to you."}), 404
+        subject = f"{data['inquiry_type']}: Order #{order_id}"
+    else:
+        subject = f"{data['inquiry_type']}"
 
     new_ticket = SupportTicket(
         user_id=current_user_id,
@@ -39,7 +46,7 @@ def create_ticket():
     
     return jsonify({"msg": "Ticket created", "ticket_id": new_ticket.id}), 201
 
-@support_bp.route('/', methods=['GET'])
+@support_bp.route('/', methods=['GET'], strict_slashes=False)
 @jwt_required()
 def get_tickets():
     current_user_id = int(get_jwt_identity())
@@ -51,6 +58,7 @@ def get_tickets():
             'id': t.id,
             'subject': t.subject,
             'status': t.status,
+            'admin_unread_count': t.admin_unread_count,
             'created_at': t.created_at
         })
     return jsonify(result), 200
@@ -93,6 +101,11 @@ def get_ticket_details(id):
     # Allow if owner OR admin
     if ticket.user_id != current_user_id and (not current_user or current_user.role != 'admin'):
         return jsonify({"msg": "Access denied"}), 403
+        
+    # Reset unread count if the ticket owner is viewing it
+    if ticket.user_id == current_user_id and ticket.admin_unread_count > 0:
+        ticket.admin_unread_count = 0
+        db.session.commit()
         
     messages = []
     for m in ticket.messages.order_by(TicketMessage.created_at).all():
@@ -172,10 +185,13 @@ def get_ticket_details(id):
 def action_ticket(id):
     current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
-    if not current_user or current_user.role != 'admin':
-        return jsonify({"msg": "Admins only!"}), 403
         
     ticket = SupportTicket.query.get_or_404(id)
+    
+    # Allow if owner OR admin
+    if ticket.user_id != current_user_id and (not current_user or current_user.role != 'admin'):
+        return jsonify({"msg": "Access denied"}), 403
+        
     data = request.get_json()
     action = data.get('action') # 'close', 'open', 'approve_refund', 'reject_refund'
     
@@ -184,6 +200,10 @@ def action_ticket(id):
     elif action == 'open':
         ticket.status = 'open'
     elif action in ['approve_refund', 'reject_refund']:
+        # Refund actions strictly require admin role
+        if not current_user or current_user.role != 'admin':
+            return jsonify({"msg": "Admins only!"}), 403
+            
         # Process refund logic
         if not data.get('order_id'):
             return jsonify({"msg": "Order ID required for refund action"}), 400
@@ -244,6 +264,10 @@ def reply_ticket(id):
     # For now, simplistic login:
     if ticket.status == 'closed':
         ticket.status = 'open'
+        
+    # Increment unread count if the sender is an admin (not the ticket owner)
+    if current_user_id != ticket.user_id:
+        ticket.admin_unread_count += 1
         
     db.session.commit()
     return jsonify({"msg": "Reply sent"}), 201

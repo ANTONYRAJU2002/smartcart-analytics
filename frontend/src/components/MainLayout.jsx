@@ -30,12 +30,12 @@ const MainLayout = () => {
     return (
         <div className="layout-wrapper">
             {/* Navigation Bar */}
-            <nav className="main-navbar">
+            <header className="main-navbar">
                 <div className="container nav-container">
                     {/* Logo */}
-                    <Link to="/portal" className="nav-brand">
+                    <Link to="/" className="nav-brand logo">
                         <div className="brand-icon">S</div>
-                        SmartCart
+                        <span className="logo-text">SmartCart</span>
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -134,7 +134,7 @@ const MainLayout = () => {
                     </div>
                 )
                 }
-            </nav >
+            </header >
 
             {/* Main Content */}
             < main className="main-content" >

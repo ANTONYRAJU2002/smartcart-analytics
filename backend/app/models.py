@@ -83,6 +83,7 @@ class OrderItem(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     quantity = db.Column(db.Integer)
     price_at_purchase = db.Column(db.Float)
+    status = db.Column(db.String(20), default='active') # active, cancelled
     product = db.relationship('Product')
 
 class Review(db.Model):
@@ -114,6 +115,7 @@ class SupportTicket(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     subject = db.Column(db.String(140))
     status = db.Column(db.String(20), default='open') # open, closed
+    admin_unread_count = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     user = db.relationship('User', backref='tickets')

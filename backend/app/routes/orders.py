@@ -71,7 +71,8 @@ def my_orders():
                 'name': i.product.name,
                 'image_url': i.product.image_url,
                 'qty': i.quantity,
-                'price': i.price_at_purchase
+                'price': i.price_at_purchase,
+                'status': i.status
             })
         results.append({
             'id': o.id,
@@ -79,7 +80,8 @@ def my_orders():
             'total': o.total_amount,
             'items': items,
             'status': o.status,
-            'shipping_address': o.shipping_address
+            'shipping_address': o.shipping_address,
+            'phone_number': o.customer.phone_number if o.customer else None
         })
     return jsonify(results), 200
 
@@ -98,6 +100,55 @@ def cancel_order(id):
     order.status = 'cancelled'
     db.session.commit()
     return jsonify({"msg": "Order cancelled"}), 200
+
+@orders_bp.route('/<int:id>/cancel_item', methods=['POST'])
+@jwt_required()
+def cancel_order_item(id):
+    current_user_id = int(get_jwt_identity())
+    order = Order.query.filter_by(id=id, user_id=current_user_id).first()
+
+    if not order:
+        return jsonify({"msg": "Order not found"}), 404
+
+    if order.status != 'pending':
+        return jsonify({"msg": "Cannot cancel items from an order that is not pending"}), 400
+
+    data = request.get_json()
+    product_id = data.get('product_id')
+    
+    if not product_id:
+        return jsonify({"msg": "Product ID is required"}), 400
+
+    from app.models import OrderItem
+    
+    # Find the specific item
+    item_to_cancel = None
+    for item in order.items:
+        if item.product_id == int(product_id):
+            item_to_cancel = item
+            break
+            
+    if not item_to_cancel:
+        return jsonify({"msg": "Product not found in this order"}), 404
+
+    # Subtract the cost from the total
+    item_total = item_to_cancel.price_at_purchase * item_to_cancel.quantity
+    order.total_amount = max(0, order.total_amount - item_total)
+
+    # Change the status instead of deleting the item
+    item_to_cancel.status = 'cancelled'
+    
+    # If this was the last active item, cancel the whole order
+    active_items = OrderItem.query.filter_by(order_id=order.id, status='active').count()
+    if active_items == 0:
+        order.status = 'cancelled'
+
+    db.session.commit()
+    return jsonify({
+        "msg": "Item cancelled successfully", 
+        "new_total": order.total_amount,
+        "order_status": order.status
+    }), 200
 
 @orders_bp.route('/<int:id>/refund', methods=['POST'])
 @jwt_required()
