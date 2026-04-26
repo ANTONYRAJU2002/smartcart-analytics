@@ -22,7 +22,8 @@ def get_users():
             'email': u.email,
             'role': u.role,
             'active': u.active,
-            'is_approved': u.is_approved
+            'is_approved': u.is_approved,
+            'department': u.department
         })
     return jsonify(result), 200
 
@@ -51,18 +52,24 @@ def get_orders():
 def get_offline_sales():
     current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
-    if not current_user or current_user.role != 'admin':
-        return jsonify({"msg": "Admins only!"}), 403
+    if not current_user or current_user.role not in ['admin', 'staff']:
+        return jsonify({"msg": "Access denied"}), 403
 
     sales = OfflineSales.query.order_by(OfflineSales.date.desc()).all()
     result = []
     for s in sales:
+        # Calculate profit on the fly for admin list
+        profit = s.total_amount - (s.quantity * (s.cost_price or 0)) if s.total_amount and s.quantity else 0
         result.append({
             'id': s.id,
+            'sale_id': s.sale_id,
             'date': s.date.strftime('%Y-%m-%d'),
-            'amount': s.total_sales,
-            'profit': s.total_profit,
-            'staff': s.staff.username if s.staff else 'Unknown'
+            'amount': s.total_amount,
+            'profit': profit,
+            'staff': s.staff_name or (s.staff_record.username if s.staff_record else 'Unknown'),
+            'product': s.product_name,
+            'quantity': s.quantity,
+            'method': s.payment_method
         })
     return jsonify(result), 200
 
@@ -74,13 +81,17 @@ def get_pending_staff():
     if not current_user or current_user.role != 'admin':
         return jsonify({"msg": "Admins only!"}), 403
 
-    pending_staff = User.query.filter_by(role='staff', is_approved=False).all()
+    pending_staff = User.query.filter(
+        User.role.in_(['staff', 'delivery_agent']),
+        User.is_approved == False
+    ).all()
     result = []
     for u in pending_staff:
         result.append({
             'id': u.id,
             'username': u.username,
-            'email': u.email
+            'email': u.email,
+            'role': u.role
         })
     return jsonify(result), 200
 
@@ -95,11 +106,13 @@ def approve_staff(id):
     user = User.query.get(id)
     if not user:
         return jsonify({"msg": "User not found"}), 404
+    if user.role not in ['staff', 'delivery_agent']:
+        return jsonify({"msg": "Only staff or delivery agent accounts can be approved here"}), 400
     
     user.is_approved = True
     db.session.commit()
     
-    return jsonify({"msg": f"Staff member {user.username} approved"}), 200
+    return jsonify({"msg": f"{user.role.replace('_', ' ').title()} {user.username} approved"}), 200
 
 @admin_bp.route('/staff/<int:id>/status', methods=['PATCH'])
 @jwt_required()

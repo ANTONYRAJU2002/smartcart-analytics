@@ -59,8 +59,15 @@ def get_products():
             'image_url': p.image_url,
             'stock': p.stock,
             'sku': p.sku,
+            'model_number': p.model_number,
+            'cost_price': p.cost_price,
             'status': p.status,
+            'description': p.description,
+            'warranty': p.warranty,
             'specifications': p.specifications,
+            'image_gallery': [img.image_url for img in p.images.all()],
+            'variants': p.variants or [],
+            'serial_numbers': p.serial_numbers if hasattr(p, 'serial_numbers') else [],
             'avg_rating': round(avg_rating, 1),
             'review_count': len(reviews)
         })
@@ -74,8 +81,8 @@ def add_product():
         # Check if admin
         current_user_id = int(get_jwt_identity())
         current_user = User.query.get(current_user_id)
-        if not current_user or current_user.role != 'admin':
-            return jsonify({"msg": "Admins only!"}), 403
+        if not current_user or current_user.role not in ['admin', 'staff']:
+            return jsonify({"msg": "Admins or Staff only!"}), 403
 
         data = request.get_json()
         print(f"DEBUG: add_product data: {data}")
@@ -97,7 +104,8 @@ def add_product():
             model_number=data.get('model_number', ''),
             status=data.get('status', 'active'),
             specifications=data.get('specifications', {}),
-            variants=data.get('variants', [])
+            variants=data.get('variants', []),
+            serial_numbers=data.get('serial_numbers', [])
         )
         db.session.add(new_product)
         db.session.commit()
@@ -161,7 +169,7 @@ def get_product(id):
         'stock': product.stock,
         'sku': product.sku,
         'image_url': product.image_url,
-        'images': images,
+        'image_gallery': images,
         'cost_price': product.cost_price,
         'description': product.description,
         'warranty': product.warranty,
@@ -178,8 +186,8 @@ def get_product(id):
 def update_product(id):
     current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
-    if not current_user or current_user.role != 'admin':
-        return jsonify({"msg": "Admins only!"}), 403
+    if not current_user or current_user.role not in ['admin', 'staff']:
+        return jsonify({"msg": "Admin or Staff only!"}), 403
     
     product = Product.query.get_or_404(id)
     data = request.get_json()
@@ -202,6 +210,7 @@ def update_product(id):
     product.status = data.get('status', product.status)
     product.specifications = data.get('specifications', product.specifications)
     product.variants = data.get('variants', product.variants)
+    product.serial_numbers = data.get('serial_numbers', product.serial_numbers)
     
     # Update gallery: Clear existing and add new
     if 'image_gallery' in data:
@@ -239,6 +248,9 @@ def get_wishlist():
     result = []
     for item in items:
         p = item.product
+        if not p:
+            continue # Skip ghost/deleted products
+            
         result.append({
             'id': p.id,
             'name': p.name,
@@ -277,71 +289,40 @@ def remove_from_wishlist(id):
     db.session.commit()
     return jsonify({"msg": "Removed from wishlist"}), 200
 
-@products_bp.route('/<int:id>/reviews', methods=['GET'])
-def get_reviews(id):
-    product = Product.query.get_or_404(id)
-    reviews = product.reviews
-    result = []
-    for r in reviews:
-        result.append({
-            'id': r.id,
-            'user': r.user.username,
-            'rating': r.rating,
-            'comment': r.comment,
-            'date': r.created_at
-        })
-    return jsonify(result), 200
-
-@products_bp.route('/<int:id>/reviews', methods=['POST'])
-@jwt_required()
-def add_review(id):
-    current_user_id = int(get_jwt_identity())
-    data = request.get_json()
-    
-    # Check if product exists
-    Product.query.get_or_404(id)
-    
-    # Check if user purchased and order is delivered
-    from app.models import Order, OrderItem
-    has_purchased = db.session.query(Order).join(OrderItem).filter(
-        Order.user_id == current_user_id,
-        OrderItem.product_id == id,
-        Order.status == 'delivered'
-    ).first()
-    
-    if not has_purchased:
-        return jsonify({"msg": "You can only review products you have purchased and received."}), 403
-    
-    # Check if already reviewed
-    existing_review = Review.query.filter_by(user_id=current_user_id, product_id=id).first()
-    if existing_review:
-         return jsonify({"msg": "You have already reviewed this product."}), 400
-
-    new_review = Review(
-        user_id=current_user_id,
-        product_id=id,
-        rating=data.get('rating'),
-        comment=data.get('comment')
-    )
-    
-    db.session.add(new_review)
-    db.session.commit()
-    
-    return jsonify({"msg": "Review added"}), 201
-
 # Category Management Routes
 
 @products_bp.route('/categories', methods=['GET'])
 def get_categories():
-    categories = Category.query.all()
-    result = []
-    for c in categories:
-        result.append({
+    from app.models import SubCategory
+
+    # Get formally-defined categories from the Category model
+    formal_cats = Category.query.all()
+    cat_map = {}
+    for c in formal_cats:
+        cat_map[c.name] = {
             'id': c.id,
             'name': c.name,
             'subcategories': [{'id': sc.id, 'name': sc.name} for sc in c.subcategories.all()]
-        })
+        }
+
+    # Also pull unique category strings from products (in case Category model is empty/partial)
+    product_cats = db.session.query(Product.category, Product.sub_category)\
+        .filter(Product.category != None, Product.category != '')\
+        .distinct().all()
+
+    for cat_str, sub_str in product_cats:
+        if cat_str not in cat_map:
+            # Create a virtual (db-only) entry for this category
+            cat_map[cat_str] = {'id': cat_str, 'name': cat_str, 'subcategories': []}
+        # Add sub-category if not already present
+        if sub_str:
+            existing_subs = [s['name'] for s in cat_map[cat_str]['subcategories']]
+            if sub_str not in existing_subs:
+                cat_map[cat_str]['subcategories'].append({'id': sub_str, 'name': sub_str})
+
+    result = sorted(cat_map.values(), key=lambda x: x['name'])
     return jsonify(result), 200
+
 
 @products_bp.route('/categories', methods=['POST'])
 @jwt_required()

@@ -36,6 +36,8 @@ const StaffLanding = () => {
                     navigate('/admin');
                 } else if (data.role === 'staff') {
                     navigate('/staff');
+                } else if (data.role === 'delivery_agent') {
+                    navigate('/delivery');
                 } else {
                     navigate('/');
                 }
@@ -74,10 +76,13 @@ const StaffLanding = () => {
                     <div className="spacer-brand-icon">
                         <Shield size={44} strokeWidth={2.5} />
                     </div>
-                    <h2>Welcome to</h2>
-                    <h1 className="spacer-analytics-title">SMARTCART ANALYTICS</h1>
-                    <div className="spacer-analytics-tagline">
-                        SECURE ACCESS • AUTHORIZED PERSONNEL
+                    <h2 className="text-xl font-light opacity-80 mb-1">Welcome to</h2>
+                    <h1 className="spacer-analytics-title text-3xl font-black uppercase tracking-tight mb-4">SMARTCART ANALYTICS</h1>
+                    <div className="spacer-analytics-tagline flex items-center gap-3 px-6 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                        <Shield size={12} className="text-blue-400" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-100/80">
+                            SECURE ACCESS • AUTHORIZED PERSONNEL
+                        </span>
                     </div>
                 </div>
 
@@ -123,6 +128,7 @@ const StaffLanding = () => {
                                         className="w-full py-3 bg-transparent border-none outline-none font-medium text-slate-900"
                                     >
                                         <option value="staff">Operational Staff</option>
+                                        <option value="delivery_agent">Delivery Agent</option>
                                         <option value="admin">System Administrator</option>
                                     </select>
                                     <Briefcase className="spacer-input-decorator" size={20} />
@@ -165,19 +171,23 @@ const StaffLanding = () => {
                             </div>
                         </div>
 
-                        <div className="spacer-actions-row mt-4">
+                        <div className="spacer-actions-row mt-8">
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="spacer-btn-primary"
+                                className="spacer-btn-primary group"
                             >
-                                {isLoading ? 'Authenticating...' : (isLogin ? 'Login' : 'Sign Up')}
+                                <span className="relative z-10 flex items-center justify-center gap-2">
+                                    {isLoading ? 'Authenticating...' : (isLogin ? 'Login' : 'Sign Up')}
+                                    {!isLoading && <Shield size={18} className="transition-transform group-hover:rotate-12" />}
+                                </span>
+                                <div className="spacer-btn-glow"></div>
                             </button>
 
                             <button
                                 type="button"
                                 onClick={() => setIsLogin(!isLogin)}
-                                className="spacer-btn-outline"
+                                className="spacer-btn-secondary"
                             >
                                 {isLogin ? 'Register' : 'Back to Login'}
                             </button>

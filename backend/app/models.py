@@ -7,13 +7,16 @@ class User(db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(256))
-    role = db.Column(db.String(20), default='customer') # 'admin', 'staff', 'customer'
-    is_approved = db.Column(db.Boolean, default=True) # Default approved (for customers), staff needs manual
+    role = db.Column(db.String(20), default='customer') # 'admin', 'staff', 'delivery_agent', 'customer'
+    is_approved = db.Column(db.Boolean, default=True) # Default approved (for customers), staff/delivery_agent need manual
     active = db.Column(db.Boolean, default=True) # For soft delete/disabling
     phone_number = db.Column(db.String(20))
+    profile_pic = db.Column(db.String(256)) # URL to profile picture
+    bio = db.Column(db.Text) # Staff bio / details
+    department = db.Column(db.String(64), default='Operations')
 
     orders = db.relationship('Order', backref='customer', lazy='dynamic')
-    offline_sales = db.relationship('OfflineSales', backref='staff', lazy='dynamic')
+    offline_sales = db.relationship('OfflineSales', backref='staff_record', lazy='dynamic')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -51,6 +54,7 @@ class Product(db.Model):
     specifications = db.Column(db.JSON) # JSON store for dynamic specs
     variants = db.Column(db.JSON) # JSON store for variations
     colors = db.Column(db.String(200)) # Legacy colors field
+    serial_numbers = db.Column(db.JSON) # For tracking unique serials
     images = db.relationship('ProductImage', backref='product', lazy='dynamic')
 
 class ProductImage(db.Model):
@@ -60,10 +64,35 @@ class ProductImage(db.Model):
 
 class OfflineSales(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    sale_id = db.Column(db.String(32), unique=True, index=True)
+    staff_name = db.Column(db.String(64))
+    staff_unique_id = db.Column(db.String(32)) # e.g. EMP001
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=True)
+    product_name = db.Column(db.String(140))
+    category = db.Column(db.String(64))
+    sub_category = db.Column(db.String(64))
+    quantity = db.Column(db.Integer)
+    price = db.Column(db.Float)
+    offline_discount = db.Column(db.Float, default=0)
+    cost_price = db.Column(db.Float, nullable=True) # For profit calculation
+    total_amount = db.Column(db.Float)
+    payment_method = db.Column(db.String(20)) # Cash, UPI, Card
     date = db.Column(db.Date, index=True)
-    total_sales = db.Column(db.Float)
-    total_profit = db.Column(db.Float)
-    staff_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    staff_id = db.Column(db.Integer, db.ForeignKey('user.id')) # Internal user link
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    customer_name = db.Column(db.String(120), nullable=True)
+    customer_phone = db.Column(db.String(20), nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+
+class Return(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sale_id = db.Column(db.String(32), index=True) # Linked to offline_sales.sale_id
+    product_name = db.Column(db.String(140))
+    staff_name = db.Column(db.String(64))
+    quantity_returned = db.Column(db.Integer)
+    refund_amount = db.Column(db.Float)
+    return_reason = db.Column(db.Text)
+    return_date = db.Column(db.Date, default=datetime.utcnow().date)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Order(db.Model):
@@ -75,6 +104,18 @@ class Order(db.Model):
     payment_status = db.Column(db.String(20), default='pending') # pending, paid, failed
     tracking_number = db.Column(db.String(100), nullable=True)
     shipping_address = db.Column(db.Text)
+    phone_number = db.Column(db.String(20), nullable=True) # Added for order tracking
+    payment_method = db.Column(db.String(20)) # Card, UPI, COD
+    delivery_proof = db.Column(db.JSON) # List of URLs to delivery proof images
+    collected_amount = db.Column(db.Float) # For COD validation
+    is_cod_received = db.Column(db.Boolean, default=False)
+    cod_received_at = db.Column(db.DateTime)
+    delivery_attempts = db.Column(db.Integer, default=0)
+    failure_reason = db.Column(db.String(100))
+    failure_action = db.Column(db.String(50))
+    advance_amount = db.Column(db.Float, default=0.0) # 10% paid upfront
+    cod_balance = db.Column(db.Float, default=0.0)    # 90% to be collected
+    history = db.Column(db.JSON) # List of {status, timestamp, message}
     items = db.relationship('OrderItem', backref='order', lazy='dynamic')
 
 class OrderItem(db.Model):
@@ -83,7 +124,14 @@ class OrderItem(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     quantity = db.Column(db.Integer)
     price_at_purchase = db.Column(db.Float)
+    selected_color = db.Column(db.String(50), nullable=True) # For tracking variants
     status = db.Column(db.String(20), default='active') # active, cancelled
+    
+    # PC Builder Grouping Fields
+    is_build_header = db.Column(db.Boolean, default=False)
+    build_id = db.Column(db.String(64), nullable=True)
+    build_metadata = db.Column(db.JSON, nullable=True) # AI Analysis, Build Name, etc.
+
     product = db.relationship('Product')
 
 class Review(db.Model):
@@ -151,12 +199,13 @@ class Address(db.Model):
     
     user = db.relationship('User', backref='addresses')
 
-class StockNotification(db.Model):
+class StaffAlert(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    staff_name = db.Column(db.String(64))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
-    is_notified = db.Column(db.Boolean, default=False)
+    product_name = db.Column(db.String(140))
+    stock_count = db.Column(db.Integer)
+    is_read = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    user = db.relationship('User', backref='stock_notifications')
-    product = db.relationship('Product', backref='stock_notifs')
+
+    product = db.relationship('Product')

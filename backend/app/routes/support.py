@@ -44,6 +44,27 @@ def create_ticket():
     db.session.add(initial_msg)
     db.session.commit()
     
+    # Run AI reply generation in the background to prevent blocking the response
+    import threading
+    def background_ai_reply(app_instance, tid):
+        with app_instance.app_context():
+            try:
+                ai_reply_text = generate_support_reply(tid)
+                if ai_reply_text and ai_reply_text != "QUOTA_EXHAUSTED":
+                    ai_msg = TicketMessage(
+                        ticket_id=tid,
+                        sender_id=None,
+                        message=f"[AI Support] {ai_reply_text}"
+                    )
+                    db.session.add(ai_msg)
+                    db.session.commit()
+            except Exception as e:
+                print(f"Background AI Reply Error: {e}")
+
+    from flask import current_app
+    thread = threading.Thread(target=background_ai_reply, args=(current_app._get_current_object(), new_ticket.id))
+    thread.start()
+    
     return jsonify({"msg": "Ticket created", "ticket_id": new_ticket.id}), 201
 
 @support_bp.route('/', methods=['GET'], strict_slashes=False)
@@ -68,8 +89,8 @@ def get_tickets():
 def get_all_tickets():
     current_user_id = int(get_jwt_identity())
     current_user = User.query.get(current_user_id)
-    if not current_user or current_user.role != 'admin':
-        return jsonify({"msg": "Admins only!"}), 403
+    if not current_user or current_user.role not in ['admin', 'staff']:
+        return jsonify({"msg": "Admins and Staff only!"}), 403
 
     tickets = SupportTicket.query.order_by(SupportTicket.created_at.desc()).all()
     from app.models import Refund
@@ -98,8 +119,8 @@ def get_ticket_details(id):
     
     ticket = SupportTicket.query.get_or_404(id)
     
-    # Allow if owner OR admin
-    if ticket.user_id != current_user_id and (not current_user or current_user.role != 'admin'):
+    # Allow if owner OR admin OR staff
+    if ticket.user_id != current_user_id and (not current_user or current_user.role not in ['admin', 'staff']):
         return jsonify({"msg": "Access denied"}), 403
         
     # Reset unread count if the ticket owner is viewing it
@@ -111,7 +132,7 @@ def get_ticket_details(id):
     for m in ticket.messages.order_by(TicketMessage.created_at).all():
         messages.append({
             'id': m.id,
-            'sender': m.sender.username,
+            'sender': m.sender.username if m.sender else 'AI Assistant',
             'sender_id': m.sender_id,
             'message': m.message,
             'created_at': m.created_at
@@ -188,8 +209,8 @@ def action_ticket(id):
         
     ticket = SupportTicket.query.get_or_404(id)
     
-    # Allow if owner OR admin
-    if ticket.user_id != current_user_id and (not current_user or current_user.role != 'admin'):
+    # Allow if owner OR admin OR staff
+    if ticket.user_id != current_user_id and (not current_user or current_user.role not in ['admin', 'staff']):
         return jsonify({"msg": "Access denied"}), 403
         
     data = request.get_json()
@@ -200,9 +221,9 @@ def action_ticket(id):
     elif action == 'open':
         ticket.status = 'open'
     elif action in ['approve_refund', 'reject_refund']:
-        # Refund actions strictly require admin role
-        if not current_user or current_user.role != 'admin':
-            return jsonify({"msg": "Admins only!"}), 403
+        # Refund actions strictly require admin or staff role
+        if not current_user or current_user.role not in ['admin', 'staff']:
+            return jsonify({"msg": "Admins and Staff only!"}), 403
             
         # Process refund logic
         if not data.get('order_id'):
@@ -244,8 +265,8 @@ def reply_ticket(id):
     
     ticket = SupportTicket.query.get_or_404(id)
     
-    # Allow if owner OR admin
-    if ticket.user_id != current_user_id and (not current_user or current_user.role != 'admin'):
+    # Allow if owner OR admin OR staff
+    if ticket.user_id != current_user_id and (not current_user or current_user.role not in ['admin', 'staff']):
         return jsonify({"msg": "Access denied"}), 403
         
     data = request.get_json()
@@ -270,4 +291,40 @@ def reply_ticket(id):
         ticket.admin_unread_count += 1
         
     db.session.commit()
+    
+    # Trigger AI reply if user sent the message
+    if current_user_id == ticket.user_id:
+        # Check if a human staff has already replied to this ticket
+        human_replied = any(m.sender_id != ticket.user_id and m.sender_id is not None for m in ticket.messages.all())
+        if not human_replied:
+            ai_reply_text = generate_support_reply(ticket.id)
+            if ai_reply_text and ai_reply_text != "QUOTA_EXHAUSTED":
+                ai_msg = TicketMessage(
+                    ticket_id=ticket.id,
+                    sender_id=None,
+                    message=f"[AI Support] {ai_reply_text}"
+                )
+                db.session.add(ai_msg)
+                db.session.commit()
+
     return jsonify({"msg": "Reply sent"}), 201
+
+@support_bp.route('/bot', methods=['POST'], strict_slashes=False)
+def chatbot_stateless():
+    data = request.get_json()
+    if not data or not data.get('message'):
+        return jsonify({"msg": "Message required"}), 400
+        
+    user_message = data['message']
+    history = data.get('history', [])
+    
+    from app.chatbot import generate_stateless_reply
+    reply = generate_stateless_reply(history, user_message)
+    
+    if reply == "QUOTA_EXHAUSTED":
+        return jsonify({"reply": "I'm sorry, I'm having trouble thinking right now. Please try again later."}), 200
+        
+    if not reply:
+        return jsonify({"reply": "I'm sorry, I'm having trouble thinking right now. Please try again later."}), 200
+        
+    return jsonify({"reply": reply}), 200

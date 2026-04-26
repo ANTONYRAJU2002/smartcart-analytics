@@ -1,0 +1,770 @@
+<?xml version="1.0" ?>
+<Products>
+    <Product>
+        <Name>Gaming Cooling Pad Red LED</Name>
+        <Description>5-fan gaming laptop cooling pad with red LED lights and adjustable height.</Description>
+        <Category>Computer Accessories</Category>
+        <SubCategory>Cooling Pads</SubCategory>
+        <Price>1999.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>RGB Cooling Pad with Phone Holder</Name>
+        <Description>Dual-fan RGB cooling pad with phone holder stand and metal mesh.</Description>
+        <Category>Computer Accessories</Category>
+        <SubCategory>Cooling Pads</SubCategory>
+        <Price>2499.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>Lapcare RGB Cooling Pad Pro</Name>
+        <Description>Lapcare premium cooling pad with 6 fans, LCD display, RGB lighting, and phone holder.</Description>
+        <Category>Computer Accessories</Category>
+        <SubCategory>Cooling Pads</SubCategory>
+        <Price>2999.0</Price>
+        <CompanyName>Lapcare</CompanyName>
+    </Product>
+    <Product>
+        <Name>Sony ULT WEAR Headphones</Name>
+        <Description>Sony ULT WEAR wireless headphones with Massive Bass, ULT Power Sound button, and ANC.</Description>
+        <Category>Computer Accessories</Category>
+        <SubCategory>Webcams</SubCategory>
+        <Price>17990.0</Price>
+        <CompanyName>Sony</CompanyName>
+    </Product>
+    <Product>
+        <Name>Sony WH-1000XM5</Name>
+        <Description>Sony WH-1000XM5 industry-leading noise cancelling headphones with DSEE Extreme.</Description>
+        <Category>Computer Accessories</Category>
+        <SubCategory>Webcams</SubCategory>
+        <Price>24990.0</Price>
+        <CompanyName>Sony</CompanyName>
+    </Product>
+    <Product>
+        <Name>Sony ULT WEAR (Forest Gray)</Name>
+        <Description>Sony ULT WEAR wireless headphones in Forest Gray with Digital NC, DSEE Extreme, 360 Reality Audio.</Description>
+        <Category>Computer Accessories</Category>
+        <SubCategory>Webcams</SubCategory>
+        <Price>15990.0</Price>
+        <CompanyName>Sony</CompanyName>
+    </Product>
+    <Product>
+        <Name>Ant Esports 200 Air </Name>
+        <Description>
+Ant Esports 200 Air Mini Micro Atx Mid Tower Gaming Cabinet White (200 Air Mini - White)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cabinet (PC Case)</SubCategory>
+        <Price>3199.0</Price>
+        <CompanyName>Ant Esports </CompanyName>
+    </Product>
+    <Product>
+        <Name>Ant Esports 511 Air </Name>
+        <Description>Ant Esports 511 Air 5F E-ATX Mid Tower Cabinet Black (AESP0371)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cabinet (PC Case)</SubCategory>
+        <Price>4650.0</Price>
+        <CompanyName>Ant Esports </CompanyName>
+    </Product>
+    <Product>
+        <Name>Ant Esports AQUA 360</Name>
+        <Description>Ant Esports AQUA 360 4F Mid Tower Gaming Cabinet - Black</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cabinet (PC Case)</SubCategory>
+        <Price>4500.0</Price>
+        <CompanyName>Ant Esports</CompanyName>
+    </Product>
+    <Product>
+        <Name>Antec Performance 1 FT ARGB </Name>
+        <Description>Antec Performance 1 FT ARGB (E-ATX) Full Tower Cabinet (Black) (PERFORMANCE-1-FT-ARGB)</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cabinet (PC Case)</SubCategory>
+        <Price>5500.0</Price>
+        <CompanyName>Antec </CompanyName>
+    </Product>
+    <Product>
+        <Name>Asus Rog Hyperion GR701</Name>
+        <Description>Asus Rog Hyperion GR701 E-Atx Mid Tower Cabinet (White)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cabinet (PC Case)</SubCategory>
+        <Price>43000.0</Price>
+        <CompanyName>Asus</CompanyName>
+    </Product>
+    <Product>
+        <Name>Corsair 5000T</Name>
+        <Description>Corsair 5000T Mid-Tower Mini-ITX High-Performance Cabinet Black (CC-9011300-WW)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cabinet (PC Case)</SubCategory>
+        <Price>19400.0</Price>
+        <CompanyName>Corsair</CompanyName>
+    </Product>
+    <Product>
+        <Name>MSI MAG Forge 320R </Name>
+        <Description>MSI MAG Forge 320R Airflow Mid Tower Atx Cabinet White
+
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cabinet (PC Case)</SubCategory>
+        <Price>5400.0</Price>
+        <CompanyName>MSI </CompanyName>
+    </Product>
+    <Product>
+        <Name>MSI Mag Pano 110R PZ Mid Tower ATX Cabinet White ₹9,999</Name>
+        <Description>MSI Mag Pano 110R PZ Mid Tower ATX Cabinet White
+
+.</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cabinet (PC Case)</SubCategory>
+        <Price>7500.0</Price>
+        <CompanyName>MSI</CompanyName>
+    </Product>
+    <Product>
+        <Name>Lian Li PC-O11 Dynamic</Name>
+        <Description>The gold standard for enthusiast water cooling.</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cabinets</SubCategory>
+        <Price>14999.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>Ant Esports Ice Chroma 240 </Name>
+        <Description>Ant Esports Ice Chroma 240 Argb 240mm Liquid Cooler Black (ICE-CHROMA-240-ARGB-BLACK)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cooler</SubCategory>
+        <Price>4850.0</Price>
+        <CompanyName>Ant Esports </CompanyName>
+    </Product>
+    <Product>
+        <Name>Ant Esports Ice Chroma 360</Name>
+        <Description>Ant Esports Ice Chroma 360 Argb 360mm Liquid Cooler Black (ICE-CHROMA-360-ARGB-BLACK)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cooler</SubCategory>
+        <Price>5750.0</Price>
+        <CompanyName>Ant Esports </CompanyName>
+    </Product>
+    <Product>
+        <Name>Ant Esports ICE</Name>
+        <Description>Ant Esports ICE-C612 Digital Air CPU Cooler (ICE-C612-DIGITAL)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cooler</SubCategory>
+        <Price>2250.0</Price>
+        <CompanyName>Ant Esports </CompanyName>
+    </Product>
+    <Product>
+        <Name>Arctic Liquid Freezer III 240</Name>
+        <Description>Arctic Liquid Freezer III 240 Argb Cpu Liquid Cooler White (ACFRE00150A)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cooler</SubCategory>
+        <Price>9600.0</Price>
+        <CompanyName>Arctic </CompanyName>
+    </Product>
+    <Product>
+        <Name>Asus ROG Strix LC</Name>
+        <Description>Asus ROG Strix LC III 360 ARGB 360mm CPU Liquid Cooler Black (ROG-STRIX-LC-III-360-ARGB-BLACK)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cooler</SubCategory>
+        <Price>24500.0</Price>
+        <CompanyName>Asus</CompanyName>
+    </Product>
+    <Product>
+        <Name>Msi Mag Coreliquid I360 </Name>
+        <Description>Msi Mag Coreliquid I360 360mm CPU Liquid Cooler Black
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Cooler</SubCategory>
+        <Price>11700.0</Price>
+        <CompanyName>Msi </CompanyName>
+    </Product>
+    <Product>
+        <Name>Asus Dual GeForce Rtx 4060 Ti </Name>
+        <Description>Asus Dual GeForce Rtx 4060 Ti White Oc Edition 8Gb Gddr6 Graphics Card (DUAL-RTX4060TI-O8G-WHITE)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Graphics Card (GPU)</SubCategory>
+        <Price>44000.0</Price>
+        <CompanyName>ASUS</CompanyName>
+    </Product>
+    <Product>
+        <Name>Asus Dual GeForce RTX 5060 Ti </Name>
+        <Description>Asus Dual GeForce RTX 5060 Ti 16GB GDDR7 OC Edition Graphics Card
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Graphics Card (GPU)</SubCategory>
+        <Price>66800.0</Price>
+        <CompanyName>ASUS</CompanyName>
+    </Product>
+    <Product>
+        <Name>ASUS ROG Astral RTX 5090 32GB </Name>
+        <Description>ASUS ROG Astral RTX 5090 32GB GDDR7 White OC Edition Graphics Card
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Graphics Card (GPU)</SubCategory>
+        <Price>491000.0</Price>
+        <CompanyName>ASUS</CompanyName>
+    </Product>
+    <Product>
+        <Name>MSI RTX 5070 Gaming Trio OC 12GB</Name>
+        <Description>MSI RTX 5070 Gaming Trio OC 12GB GDDR7 Graphics Card (G5070-12GTC)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Graphics Card (GPU)</SubCategory>
+        <Price>86000.0</Price>
+        <CompanyName>MSI </CompanyName>
+    </Product>
+    <Product>
+        <Name>MSI RTX 5060 Ventus 2X</Name>
+        <Description>MSI RTX 5060 Ventus 2X OC White 8GB GDDR7 Graphics Card (G5060-8V2CW)
+ </Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Graphics Card (GPU)</SubCategory>
+        <Price>41400.0</Price>
+        <CompanyName>MSI</CompanyName>
+    </Product>
+    <Product>
+        <Name>NVIDIA RTX 4090</Name>
+        <Description>The absolute pinnacle of PC gaming.</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Graphics Cards (GPUs)</SubCategory>
+        <Price>189999.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>RTX 4080 Super</Name>
+        <Description>NVIDIA GeForce RTX 4080 Super with 16GB GDDR6X, DLSS 3.0, and ray tracing for ultimate 4K gaming.</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Graphics Cards (GPUs)</SubCategory>
+        <Price>129999.0</Price>
+        <CompanyName>NVIDIA</CompanyName>
+    </Product>
+    <Product>
+        <Name>AsRock B760M </Name>
+        <Description>AsRock B760M Steel Legend Wifi Lga1700 Micro Atx Motherboard (B760M-Steel-Legend-WiFi)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Motherboard</SubCategory>
+        <Price>15999.0</Price>
+        <CompanyName>AsRock</CompanyName>
+    </Product>
+    <Product>
+        <Name>ASRock Phantom Gaming X870E Nova</Name>
+        <Description>ASRock Phantom Gaming X870E Nova WiFi AM5 ATX Motherboard (X870E-NOVA-WIFI)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Motherboard</SubCategory>
+        <Price>37500.0</Price>
+        <CompanyName>ASRock</CompanyName>
+    </Product>
+    <Product>
+        <Name>Asus Prime</Name>
+        <Description>Asus Prime B550M-K Argb AM4 Micro Atx Motherboard (PRIME-B550M-K-ARGB)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Motherboard</SubCategory>
+        <Price>9500.0</Price>
+        <CompanyName>Asus</CompanyName>
+    </Product>
+    <Product>
+        <Name>ASUS ROG </Name>
+        <Description>ASUS ROG Crosshair X870E Apex AM5 ATX Motherboard
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Motherboard</SubCategory>
+        <Price>70800.0</Price>
+        <CompanyName>ASUS </CompanyName>
+    </Product>
+    <Product>
+        <Name>MSI B650</Name>
+        <Description>MSI B650 Gaming Plus WIFI Motherboard( B650-GAMING-PLUS-WIFI)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Motherboard</SubCategory>
+        <Price>33999.0</Price>
+        <CompanyName>MSI </CompanyName>
+    </Product>
+    <Product>
+        <Name>Msi B650M</Name>
+        <Description>Msi B650M Project Zero Wifi Am5 Micro Atx Motherboard (B650M-PROJECT-ZERO)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Motherboard</SubCategory>
+        <Price>20100.0</Price>
+        <CompanyName>Msi</CompanyName>
+    </Product>
+    <Product>
+        <Name>ASUS ROG Crosshair X670E</Name>
+        <Description/>
+        <Category>Computer Components</Category>
+        <SubCategory>Motherboards</SubCategory>
+        <Price>64999.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>Corsair RM1000x Gold</Name>
+        <Description>Legendary silent power and efficiency.</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Power Supplies (PSUs)</SubCategory>
+        <Price>16999.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>Ant Esports FG550 V2 550W</Name>
+        <Description>Ant Esports FG550 V2 550W 80 Plus Gold Fully-Modular Power Supply (FG550 V2)
+
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Power Supply (SMPS)</SubCategory>
+        <Price>3850.0</Price>
+        <CompanyName>Ant Esports </CompanyName>
+    </Product>
+    <Product>
+        <Name>Ant Esports FG650 80</Name>
+        <Description>Ant Esports FG650 80 Plus Gold Power Supply (FG650)
+
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Power Supply (SMPS)</SubCategory>
+        <Price>4440.0</Price>
+        <CompanyName>Ant Esports</CompanyName>
+    </Product>
+    <Product>
+        <Name>ASUS ROG Thor 1000W </Name>
+        <Description>ASUS ROG Thor 1000W Platinum III ATX 3.1 Power Supply
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Power Supply (SMPS)</SubCategory>
+        <Price>37500.0</Price>
+        <CompanyName>ASUS</CompanyName>
+    </Product>
+    <Product>
+        <Name>Amd Ryzen 3 3200G</Name>
+        <Description>Amd Ryzen 3 3200G Processor With Radeon Rx Vega 8 Graphics (YD3200C5FHBOX)</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Processor (CPU)</SubCategory>
+        <Price>3599.0</Price>
+        <CompanyName>Amd </CompanyName>
+    </Product>
+    <Product>
+        <Name>Amd Ryzen 5 3400G</Name>
+        <Description>Amd Ryzen 5 3400G With Radeon Rx Vega 11 Graphics Processor ( Upto 4.2 Ghz / 6 Mb Cache)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Processor (CPU)</SubCategory>
+        <Price>7400.0</Price>
+        <CompanyName>Amd</CompanyName>
+    </Product>
+    <Product>
+        <Name>Amd Ryzen 7 5700G</Name>
+        <Description>Amd Ryzen 7 5700G Processor With Radeon Graphics
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Processor (CPU)</SubCategory>
+        <Price>20550.0</Price>
+        <CompanyName>Amd </CompanyName>
+    </Product>
+    <Product>
+        <Name>AMD Ryzen 9 9900X3D</Name>
+        <Description>AMD Ryzen 9 9900X3D Desktop Gaming and Content Creation Processor (100-100001368WOF)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Processor (CPU)</SubCategory>
+        <Price>59700.0</Price>
+        <CompanyName>Amd </CompanyName>
+    </Product>
+    <Product>
+        <Name>Intel 10Th Gen Comet Lake Core I5</Name>
+        <Description>Intel 10Th Gen Comet Lake Core I5-10400F Processor (BX8070110400F)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Processor (CPU)</SubCategory>
+        <Price>10480.0</Price>
+        <CompanyName>Intel </CompanyName>
+    </Product>
+    <Product>
+        <Name>Intel Core i7 14700K</Name>
+        <Description>Intel Core i7 14700K 14th Gen Desktop Processor (BX8071514700K)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Processor (CPU)</SubCategory>
+        <Price>47000.0</Price>
+        <CompanyName>Intel</CompanyName>
+    </Product>
+    <Product>
+        <Name>Intel Core I9 14900KS 14th Gen</Name>
+        <Description>Intel Core I9 14900KS 14th Gen Desktop Processor (i9-14900KS)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Processor (CPU)</SubCategory>
+        <Price>64500.0</Price>
+        <CompanyName>Intel </CompanyName>
+    </Product>
+    <Product>
+        <Name>Acer HT200 16GB</Name>
+        <Description>Acer HT200 16GB 6000MHz CL30 DDR5 RAM (Black)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>RAM</SubCategory>
+        <Price>24500.0</Price>
+        <CompanyName>Acer</CompanyName>
+    </Product>
+    <Product>
+        <Name>Acer Predator Vesta II Rgb 32Gb</Name>
+        <Description>Acer Predator Vesta II Rgb 32Gb (16GbX2) 6000Mhz Ddr5 CL30 Desktop Ram (BL-9BWWR-327)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>RAM</SubCategory>
+        <Price>49900.0</Price>
+        <CompanyName>Acer</CompanyName>
+    </Product>
+    <Product>
+        <Name>Adata Xpg Lancer 16Gb Rgb</Name>
+        <Description>Adata Xpg Lancer 16Gb Rgb Series (16Gbx1) Ddr5 6000Mhz Desktop Ram (White) (AX5U6000C3016G-CLARWH)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>RAM</SubCategory>
+        <Price>27500.0</Price>
+        <CompanyName>Adata</CompanyName>
+    </Product>
+    <Product>
+        <Name>G.skill Trident Z Royal 16Gb</Name>
+        <Description>G.skill Trident Z Royal 16Gb (8Gbx2) 3600Mhz Ddr4 Rgb Ram (F4-3600C16D-16Gtrsc)</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>RAM</SubCategory>
+        <Price>18000.0</Price>
+        <CompanyName>G.skill</CompanyName>
+    </Product>
+    <Product>
+        <Name>Hyperx Fury 16Gb Ddr4</Name>
+        <Description>Hyperx Fury 16Gb Ddr4 3200Mhz Cl16 Ram (Black) (Hx432C16Fb3/16)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>RAM</SubCategory>
+        <Price>14500.0</Price>
+        <CompanyName>Hyperx</CompanyName>
+    </Product>
+    <Product>
+        <Name>Corsair Vengeance 32GB DDR5</Name>
+        <Description>Lightning fast 6000MHz performance.</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>RAM (Memory)</SubCategory>
+        <Price>14999.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>Samsung 9100 Pro 1TB </Name>
+        <Description>Samsung 9100 Pro 1TB PCIe Gen 5.0 NVMe M.2 Internal SSD (MZ-VAP1T0BW)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Storage (SSD/HDD) </SubCategory>
+        <Price>30700.0</Price>
+        <CompanyName>Samsung</CompanyName>
+    </Product>
+    <Product>
+        <Name>Samsung 990 Evo Plus 2TB </Name>
+        <Description>Samsung 990 Evo Plus 2TB M.2 NVMe Gen5 Internal SSD (MZ-V9S2T0BW)</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Storage (SSD/HDD) </SubCategory>
+        <Price>40000.0</Price>
+        <CompanyName>Samsung</CompanyName>
+    </Product>
+    <Product>
+        <Name>Xpg Gammix S60 512Gb</Name>
+        <Description>Xpg Gammix S60 512Gb PCIe Gen4 x4 M.2 2280 Internal Ssd
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Storage (SSD/HDD) </SubCategory>
+        <Price>9250.0</Price>
+        <CompanyName>Xpg</CompanyName>
+    </Product>
+    <Product>
+        <Name>XPG Mars 980 Blade 4TB</Name>
+        <Description>XPG Mars 980 Blade 4TB PCIe Gen5 x4 M.2 2280 SSD
+
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Storage (SSD/HDD) </SubCategory>
+        <Price>61500.0</Price>
+        <CompanyName>XPG</CompanyName>
+    </Product>
+    <Product>
+        <Name>Acer Predator GM7000 4TB </Name>
+        <Description>Acer Predator GM7000 4TB M.2 NVMe Gen4 Internal SSD (BL-9BWWR-107)
+</Description>
+        <Category>Computer Components</Category>
+        <SubCategory>Storage (SSD/HDD) </SubCategory>
+        <Price>57000.0</Price>
+        <CompanyName>Acer</CompanyName>
+    </Product>
+    <Product>
+        <Name>Mac-Style AIO 27</Name>
+        <Description>Stunning 4K display and powerful internal hardware.</Description>
+        <Category>Desktop PCs</Category>
+        <SubCategory>All-in-One PCs</SubCategory>
+        <Price>129999.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>Dell OptiPlex 7010</Name>
+        <Description>Micro form-factor with enterprise security.</Description>
+        <Category>Desktop PCs</Category>
+        <SubCategory>Business PCs</SubCategory>
+        <Price>72999.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>Aegis X Pro</Name>
+        <Description>A pre-built monster featuring RTX 4090 and i9.</Description>
+        <Category>Desktop PCs</Category>
+        <SubCategory>Gaming Desktops</SubCategory>
+        <Price>249999.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>NVIDIA RTX A6000 Rig</Name>
+        <Description>Unparalleled power for AI training and rendering.</Description>
+        <Category>Desktop PCs</Category>
+        <SubCategory>Workstations</SubCategory>
+        <Price>699999.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>Precision 7920 Dual-Xeon</Name>
+        <Description>Serious multithreaded performance for rendering.</Description>
+        <Category>Desktop PCs</Category>
+        <SubCategory>Workstations</SubCategory>
+        <Price>459999.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>Redragon K552</Name>
+        <Description>The best-selling budget mechanical keyboard.</Description>
+        <Category>Keyboards &amp; Mouse</Category>
+        <SubCategory>Gaming Keyboards</SubCategory>
+        <Price>2999.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>Hyperx Alloy Elite</Name>
+        <Description>Hyperx Alloy Elite Rgb Cherry Mx Blue Switches
+</Description>
+        <Category>Keyboards &amp; Mouse</Category>
+        <SubCategory>Mechanical Keyboards</SubCategory>
+        <Price>13200.0</Price>
+        <CompanyName>Hyperx</CompanyName>
+    </Product>
+    <Product>
+        <Name>HyperX Alloy </Name>
+        <Description>HyperX Alloy Origins 60 Mechanical Gaming Keyboard Red Linear Switches (4P5N4AA-ABA)
+</Description>
+        <Category>Keyboards &amp; Mouse</Category>
+        <SubCategory>Mechanical Keyboards</SubCategory>
+        <Price>8500.0</Price>
+        <CompanyName>HyperX</CompanyName>
+    </Product>
+    <Product>
+        <Name>Logitech G512 </Name>
+        <Description>Logitech G512 Cliky Rgb Mechanical Keyboard-Gx Blue Switch (920-008949)
+</Description>
+        <Category>Keyboards &amp; Mouse</Category>
+        <SubCategory>Mechanical Keyboards</SubCategory>
+        <Price>8150.0</Price>
+        <CompanyName>Logitech</CompanyName>
+    </Product>
+    <Product>
+        <Name>Logitech G515 Lightspeed </Name>
+        <Description>Logitech G515 Lightspeed TKL Wireless Gaming Keyboard White (920-012581)
+</Description>
+        <Category>Keyboards &amp; Mouse</Category>
+        <SubCategory>Mechanical Keyboards</SubCategory>
+        <Price>1419510700.0</Price>
+        <CompanyName>Logitech</CompanyName>
+    </Product>
+    <Product>
+        <Name>Razer Huntsman Mini </Name>
+        <Description>Razer Huntsman Mini Gaming Keyboard Linear Optical Red Switches (RZ03-03390400-R3M1)
+
+</Description>
+        <Category>Keyboards &amp; Mouse</Category>
+        <SubCategory>Mechanical Keyboards</SubCategory>
+        <Price>8350.0</Price>
+        <CompanyName>Razer</CompanyName>
+    </Product>
+    <Product>
+        <Name>Logitech G Pro Superlight</Name>
+        <Description>The professional choice for esport icons.</Description>
+        <Category>Keyboards &amp; Mouse</Category>
+        <SubCategory>Optical Mouse</SubCategory>
+        <Price>12999.0</Price>
+        <CompanyName>SmartCart</CompanyName>
+    </Product>
+    <Product>
+        <Name>Ant Esports GM100 Rgb</Name>
+        <Description>Ant Esports GM100 Rgb Gaming Mouse (Black) (GM100-RGB-BLACK)
+</Description>
+        <Category>Keyboards &amp; Mouse</Category>
+        <SubCategory>Optical Mouse</SubCategory>
+        <Price>690.0</Price>
+        <CompanyName>Ant Esports </CompanyName>
+    </Product>
+    <Product>
+        <Name>CloudNine White Ergonomic Mouse</Name>
+        <Description>A fully ergonomic mouse perfectly designed to reduce wrist strain, featuring a pristine white finish.</Description>
+        <Category>Keyboards &amp; Mouse</Category>
+        <SubCategory>Optical Mouse</SubCategory>
+        <Price>4999.0</Price>
+        <CompanyName>FrostTech</CompanyName>
+    </Product>
+    <Product>
+        <Name>Glacier Gaming Mouse</Name>
+        <Description>Ultra-lightweight gaming mouse on a stunning white base. Premium PTFE feet for smooth gliding.</Description>
+        <Category>Keyboards &amp; Mouse</Category>
+        <SubCategory>Optical Mouse</SubCategory>
+        <Price>8499.0</Price>
+        <CompanyName>FrostTech</CompanyName>
+    </Product>
+    <Product>
+        <Name>Frostbite Wireless Mouse</Name>
+        <Description>Clean and minimalistic white wireless mouse for office and everyday tasks. Excellent battery life.</Description>
+        <Category>Keyboards &amp; Mouse</Category>
+        <SubCategory>Optical Mouse</SubCategory>
+        <Price>3299.0</Price>
+        <CompanyName>FrostTech</CompanyName>
+    </Product>
+    <Product>
+        <Name>Snow Leopard Pro Mouse</Name>
+        <Description>Professional grade optical mouse with high polling rate and customizable buttons. White edition.</Description>
+        <Category>Keyboards &amp; Mouse</Category>
+        <SubCategory>Optical Mouse</SubCategory>
+        <Price>11099.0</Price>
+        <CompanyName>FrostTech</CompanyName>
+    </Product>
+    <Product>
+        <Name>MSI Katana 15 Gaming Laptop</Name>
+        <Description>MSI Katana 15 with Intel Core i9, NVIDIA GeForce RTX, 144Hz display, per-key RGB keyboard.</Description>
+        <Category>Laptops</Category>
+        <SubCategory>Gaming Laptops</SubCategory>
+        <Price>94990.0</Price>
+        <CompanyName>MSI</CompanyName>
+    </Product>
+    <Product>
+        <Name>ASUS ROG Strix G16</Name>
+        <Description>ASUS ROG Strix G16 with per-key RGB, ROG Strix branding, high-refresh gaming display.</Description>
+        <Category>Laptops</Category>
+        <SubCategory>Gaming Laptops</SubCategory>
+        <Price>164990.0</Price>
+        <CompanyName>ASUS</CompanyName>
+    </Product>
+    <Product>
+        <Name>Acer Predator Helios Neo AI Laptop</Name>
+        <Description>Acer Predator AI Laptop with Windows 11, Intel Core i7, NVIDIA GeForce RTX, RGB keyboard.</Description>
+        <Category>Laptops</Category>
+        <SubCategory>Gaming Laptops</SubCategory>
+        <Price>129990.0</Price>
+        <CompanyName>Acer</CompanyName>
+    </Product>
+    <Product>
+        <Name>HP Pavilion 15 Laptop</Name>
+        <Description>HP Pavilion 15 with AMD Ryzen 5 5000 Series, slim design, silver finish.</Description>
+        <Category>Laptops</Category>
+        <SubCategory>Ultrabooks</SubCategory>
+        <Price>54990.0</Price>
+        <CompanyName>HP</CompanyName>
+    </Product>
+    <Product>
+        <Name>ASUS Vivobook 15</Name>
+        <Description>ASUS Vivobook 15 with vibrant OLED display, thin and light design.</Description>
+        <Category>Laptops</Category>
+        <SubCategory>Ultrabooks</SubCategory>
+        <Price>45990.0</Price>
+        <CompanyName>ASUS</CompanyName>
+    </Product>
+    <Product>
+        <Name>Dell Inspiron 15</Name>
+        <Description>Dell Inspiron 15 everyday laptop for students and professionals.</Description>
+        <Category>Laptops</Category>
+        <SubCategory>Ultrabooks</SubCategory>
+        <Price>42990.0</Price>
+        <CompanyName>Dell</CompanyName>
+    </Product>
+    <Product>
+        <Name>Dell Latitude 5440</Name>
+        <Description>Dell Latitude 5440 business laptop with robust build quality.</Description>
+        <Category>Laptops</Category>
+        <SubCategory>Workstation Laptops</SubCategory>
+        <Price>89990.0</Price>
+        <CompanyName>Dell</CompanyName>
+    </Product>
+    <Product>
+        <Name>HP EliteBook 840 G9</Name>
+        <Description>HP EliteBook 840 G9 premium business ultrabook with sleek silver design.</Description>
+        <Category>Laptops</Category>
+        <SubCategory>Workstation Laptops</SubCategory>
+        <Price>79990.0</Price>
+        <CompanyName>HP</CompanyName>
+    </Product>
+    <Product>
+        <Name>Lenovo ThinkPad E14 Gen 5</Name>
+        <Description>Lenovo ThinkPad E14 with iconic TrackPoint, spill-resistant keyboard, MIL-STD tested.</Description>
+        <Category>Laptops</Category>
+        <SubCategory>Workstation Laptops</SubCategory>
+        <Price>68990.0</Price>
+        <CompanyName>Lenovo</CompanyName>
+    </Product>
+    <Product>
+        <Name>LG UltraGear 34GS95QE-B 34 Inch </Name>
+        <Description>LG UltraGear 34GS95QE-B 34 Inch Gaming Monitor (34GS95QE-B)
+</Description>
+        <Category>Monitors</Category>
+        <SubCategory>Curved Monitors</SubCategory>
+        <Price>106900.0</Price>
+        <CompanyName>LG</CompanyName>
+    </Product>
+    <Product>
+        <Name>Samsung Odyssey G5 Lc34G55T</Name>
+        <Description>Samsung Odyssey G5 Lc34G55Twwwxxl 34 Inch Curved Gaming Monitor (Lc34G55Twwwxxl)
+</Description>
+        <Category>Monitors</Category>
+        <SubCategory>Curved Monitors</SubCategory>
+        <Price>32500.0</Price>
+        <CompanyName>Samsung </CompanyName>
+    </Product>
+    <Product>
+        <Name>ASUS TUF Gaming VG27AQ</Name>
+        <Description>ASUS TUF Gaming 27-inch WQHD monitor with ELMB Sync and 165Hz refresh rate.</Description>
+        <Category>Monitors</Category>
+        <SubCategory>Gaming Monitors</SubCategory>
+        <Price>24990.0</Price>
+        <CompanyName>ASUS</CompanyName>
+    </Product>
+    <Product>
+        <Name>Acer Nitro XV272U</Name>
+        <Description>Acer Nitro 27-inch WQHD gaming monitor with vivid colours and fast response time.</Description>
+        <Category>Monitors</Category>
+        <SubCategory>Gaming Monitors</SubCategory>
+        <Price>22990.0</Price>
+        <CompanyName>Acer</CompanyName>
+    </Product>
+    <Product>
+        <Name>LG UltraGear 27GP850</Name>
+        <Description>LG UltraGear 27-inch Nano IPS gaming monitor with 1ms response time.</Description>
+        <Category>Monitors</Category>
+        <SubCategory>Gaming Monitors</SubCategory>
+        <Price>29990.0</Price>
+        <CompanyName>LG</CompanyName>
+    </Product>
+    <Product>
+        <Name>AOC AG276QZD2 27 Inch QD-OLED QHD </Name>
+        <Description>AOC AG276QZD2 27 Inch QD-OLED QHD </Description>
+        <Category>Monitors</Category>
+        <SubCategory>Gaming Monitors</SubCategory>
+        <Price>49900.0</Price>
+        <CompanyName>AOC </CompanyName>
+    </Product>
+</Products>

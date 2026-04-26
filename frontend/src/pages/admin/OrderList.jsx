@@ -1,7 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import api from '../../services/api';
 import OrderDetail from './OrderDetail';
-import { Eye, Filter, ShoppingCart } from 'lucide-react';
+import { 
+    Eye, Filter, ShoppingCart, Package, 
+    Clock, CheckCircle2, Truck, XCircle, 
+    RotateCcw, AlertTriangle, TrendingUp, IndianRupee 
+} from 'lucide-react';
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
@@ -24,107 +28,168 @@ const OrderList = () => {
         fetchOrders();
     }, []);
 
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'delivered': return 'bg-emerald-50 text-emerald-600 border-emerald-100';
-            case 'shipped': return 'bg-blue-50 text-blue-600 border-blue-100';
-            case 'packed': return 'bg-amber-50 text-amber-600 border-amber-100';
-            case 'cancelled': return 'bg-rose-50 text-rose-600 border-rose-100';
-            case 'returned': return 'bg-slate-100 text-slate-600 border-slate-200';
-            case 'return_requested': return 'bg-orange-50 text-orange-600 border-orange-100';
-            default: return 'bg-slate-50 text-slate-500 border-slate-100';
-        }
+    // Statistics Calculation
+    const stats = useMemo(() => {
+        const total = orders.length;
+        const revenue = orders.reduce((acc, o) => acc + (o.total || 0), 0);
+        const pending = orders.filter(o => o.status === 'pending').length;
+        const growth = 18; // Mock growth percentage
+        return { total, revenue, pending, growth };
+    }, [orders]);
+
+    // Grouping orders by status
+    const groupedOrders = useMemo(() => {
+        const groups = {
+            'pending': [],
+            'packed': [],
+            'shipped': [],
+            'delivered': [],
+            'cancelled': [],
+            'returned': [],
+            'return_requested': []
+        };
+        orders.forEach(order => {
+            const status = order.status === 'return_requested' ? 'return_requested' : order.status;
+            if (groups[status]) {
+                groups[status].push(order);
+            } else {
+                groups['pending'].push(order);
+            }
+        });
+        return groups;
+    }, [orders]);
+
+    const getGroupTotal = (group) => {
+        return group.reduce((acc, o) => acc + (o.total || 0), 0).toLocaleString();
     };
 
+    const columns = [
+        { id: 'pending', label: 'Pending', pill: 'PENDING', pillClass: 'pill-pending', bg: 'col-pending', sub: 'Awaiting processing' },
+        { id: 'packed', label: 'Confirmed', pill: 'CONFIRMED', pillClass: 'pill-confirmed', bg: 'col-confirmed', sub: 'Payment verified' },
+        { id: 'shipped', label: 'Shipped', pill: 'SHIPPED', pillClass: 'pill-shipped', bg: 'col-shipped', sub: 'In transit' },
+        { id: 'delivered', label: 'Delivered', pill: 'DELIVERED', pillClass: 'pill-delivered', bg: 'col-delivered', sub: 'Successfully delivered' },
+        { id: 'cancelled', label: 'Cancelled', pill: 'CANCELLED', pillClass: 'pill-cancelled', bg: 'col-cancelled', sub: 'Order cancelled' },
+        { id: 'returned', label: 'Returned', pill: 'RETURNED', pillClass: 'pill-returned', bg: 'col-returned', sub: 'Return initiated' },
+        { id: 'return_requested', label: 'Refunded', pill: 'REFUNDED', pillClass: 'pill-refunded', bg: 'col-refunded', sub: 'Payment refunded' },
+    ];
+
     return (
-        <div className="space-y-4">
-            <header className="flex justify-between items-end px-2">
+        <div className="flex flex-col h-full overflow-hidden bg-[#f8faff]">
+            {/* Main Header */}
+            <header className="order-logistics-header flex justify-between items-center px-6 py-4 shrink-0">
                 <div>
-                    <h1 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                        <ShoppingCart className="text-indigo-600" size={24} />
-                        Order Logistics
-                    </h1>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Transaction & Fulfillment Control</p>
+                    <h1 className="text-2xl font-black text-slate-900 tracking-tight">Order Logistics</h1>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Manage and track all customer orders</p>
                 </div>
-                <div className="flex gap-2">
-                    <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg shadow-sm flex items-center gap-2 hover:bg-slate-50 transition-all">
-                        <Filter size={14} className="text-slate-400" />
-                        <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Filter Archive</span>
+                <div className="order-logistics-actions flex items-center gap-3">
+                    <div className="relative">
+                        <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                        <input type="text" placeholder="Search orders, ID, customer..." className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-500/10 w-64 transition-all" />
+                    </div>
+                    <select className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-600 outline-none">
+                        <option>All Statuses</option>
+                    </select>
+                    <select className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-600 outline-none">
+                        <option>Last 30 Days</option>
+                    </select>
+                    <button className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 flex items-center gap-2 hover:bg-slate-50 transition-all">
+                        <TrendingUp size={14} /> More Filters
+                    </button>
+                    <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-indigo-700 transition-all ml-4">
+                        Export
                     </button>
                 </div>
             </header>
 
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-                {loading ? (
-                    <div className="p-20 text-center text-[11px] font-black text-slate-400 uppercase tracking-widest animate-pulse">Synchronising Ledger...</div>
-                ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full border-collapse">
-                            <thead>
-                                <tr className="bg-slate-50/50 border-b border-slate-100">
-                                    <th className="px-4 py-3 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Identifier</th>
-                                    <th className="px-4 py-3 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Customer Context</th>
-                                    <th className="px-4 py-3 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Temporal</th>
-                                    <th className="px-4 py-3 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Quantum</th>
-                                    <th className="px-4 py-3 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Logistics</th>
-                                    <th className="px-4 py-3 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Fiscal Status</th>
-                                    <th className="px-4 py-3 text-right text-[9px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-50">
-                                {orders.map(order => (
-                                    <tr key={order.id} className="hover:bg-slate-50/50 transition-colors group">
-                                        <td className="px-4 py-3">
-                                            <span className="font-mono text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">#{order.id}</span>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex flex-col">
-                                                <span className="text-[11px] font-black text-slate-900 leading-tight">{order.user}</span>
-                                                <span className="text-[9px] font-bold text-slate-400 leading-none">{order.user_email}</span>
+            {loading ? (
+                <div className="flex-1 flex flex-col items-center justify-center">
+                    <div className="w-12 h-12 border-4 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin mb-4" />
+                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest animate-pulse">Synchronising Logistics Data...</p>
+                </div>
+            ) : (
+                <div className="kanban-board-container px-6">
+                    <div className="kanban-board custom-scrollbar">
+                        {columns.map(col => (
+                            <div key={col.id} className="kanban-column">
+                                <div className={`column-header ${col.bg}`}>
+                                    <div className="column-top">
+                                        <span className="column-title">{col.label}</span>
+                                        <span className={`status-pill ${col.pillClass}`}>{groupedOrders[col.id]?.length || 0}</span>
+                                    </div>
+                                    <span className="column-revenue">₹{getGroupTotal(groupedOrders[col.id])}</span>
+                                    <p className="column-subtext">{col.sub}</p>
+                                </div>
+                                
+                                <div className="flex-1 overflow-y-auto custom-scrollbar pt-2 pb-10">
+                                    {groupedOrders[col.id]?.map(order => (
+                                        <div 
+                                            key={order.id} 
+                                            onClick={() => setSelectedOrder(order)}
+                                            className={`kanban-card ${selectedOrder?.id === order.id ? 'ring-2 ring-indigo-500' : ''}`}
+                                        >
+                                            <div className="flex justify-between items-start mb-1">
+                                                <span className="card-id">#{order.id}</span>
+                                                <span className="card-date">{order.date}</span>
                                             </div>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <span className="text-[10px] font-bold text-slate-500">{order.date}</span>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex flex-col">
-                                                <span className="text-[11px] font-black text-slate-900 leading-tight">₹{order.total?.toLocaleString()}</span>
-                                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">{order.items?.length || 0} Line Items</span>
+                                            <h4 className="card-customer mb-2">{order.user}</h4>
+                                            <div className="flex justify-between items-end">
+                                                <div className="flex flex-col">
+                                                    <span className="card-price">₹{order.total?.toLocaleString()}</span>
+                                                    {order.payment_method === 'COD' && (
+                                                        <span className="text-[8px] font-black text-rose-500 uppercase">COD Payment</span>
+                                                    )}
+                                                </div>
+                                                <span className={`card-status-pill card-pill-${order.status || 'pending'}`}>
+                                                    {order.status === 'packed' ? 'Confirmed' : order.status}
+                                                </span>
                                             </div>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-md border ${getStatusColor(order.status)}`}>
-                                                {order.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-md border ${order.payment_status === 'paid'
-                                                ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
-                                                : order.payment_status === 'failed'
-                                                    ? 'bg-rose-50 text-rose-600 border-rose-100'
-                                                    : 'bg-amber-50 text-amber-600 border-amber-100'
-                                                }`}>
-                                                {order.payment_status || 'pending'}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 text-right">
-                                            <button
-                                                onClick={() => setSelectedOrder(order)}
-                                                className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                                            >
-                                                <Eye size={16} />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                            {order.status === 'shipped' && (
+                                                <div className="mt-3 pt-2 border-t border-slate-50 flex items-center gap-2">
+                                                    <Truck size={10} className="text-indigo-500" />
+                                                    <span className="text-[8px] font-bold text-indigo-400 uppercase tracking-wider">In Transit Hub</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                    {(!groupedOrders[col.id] || groupedOrders[col.id].length === 0) && (
+                                        <div className="m-4 p-8 border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center text-center opacity-40">
+                                            <Package size={24} className="text-slate-200 mb-2" />
+                                            <p className="text-[9px] font-bold text-slate-300 uppercase">Empty Column</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                )}
-            </div>
+
+                    {/* Bottom Docked Stats */}
+                    <div className="bottom-stats-bar">
+                        <div className="stat-item">
+                            <span className="stat-label">Total Orders</span>
+                            <span className="stat-value">{stats.total}</span>
+                        </div>
+                        <div className="stat-item">
+                            <span className="stat-label">Total Revenue</span>
+                            <span className="stat-value">₹{stats.revenue?.toLocaleString()}</span>
+                        </div>
+                        <div className="stat-item">
+                            <span className="stat-label">Avg. Order Value</span>
+                            <span className="stat-value">₹{(stats.revenue / (stats.total || 1)).toLocaleString(undefined, {maximumFractionDigits: 0})}</span>
+                        </div>
+                        <div className="stat-item flex-row items-center gap-2">
+                            <div className="flex flex-col">
+                                <span className="stat-label">This Month</span>
+                                <span className="stat-value text-emerald-600 flex items-center gap-1">
+                                    <TrendingUp size={14} /> {stats.growth}%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {selectedOrder && (
-                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+                <div className="order-modal-overlay" onClick={(e) => e.target === e.currentTarget && setSelectedOrder(null)}>
                     <OrderDetail
                         order={selectedOrder}
                         onClose={() => setSelectedOrder(null)}

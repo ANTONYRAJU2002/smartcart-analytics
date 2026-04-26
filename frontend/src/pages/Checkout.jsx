@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useCart } from '../context/CartContext';
-import { Trash2, CheckCircle, Plus, ArrowRight, ChevronLeft } from 'lucide-react';
+import { Trash2, CheckCircle, Plus, ArrowRight, ChevronLeft, CreditCard, Smartphone, Banknote, ShieldCheck, AlertCircle } from 'lucide-react';
 import './Checkout.css';
+import PaymentModal from './PaymentModal';
 
 const Checkout = () => {
     const { cart, cartTotal, clearCart } = useCart();
@@ -25,6 +26,7 @@ const Checkout = () => {
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [loading, setLoading] = useState(true);
     const [placingOrder, setPlacingOrder] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
 
     // Multi-Step State
     const [checkoutStep, setCheckoutStep] = useState(1);
@@ -110,7 +112,8 @@ const Checkout = () => {
     };
 
     const handlePlaceOrder = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
+        
         if (!selectedAddress) {
             alert('Please select a shipping address');
             return;
@@ -126,7 +129,19 @@ const Checkout = () => {
             return;
         }
 
+        if (selectedPayment === 'cod') {
+            // Show Razorpay Modal for 10% advance
+            setShowPaymentModal(true);
+            return;
+        }
+
+        // Show Razorpay Modal for 100% digital payment
+        setShowPaymentModal(true);
+    };
+
+    const finalizeOrder = async () => {
         setPlacingOrder(true);
+        setShowPaymentModal(false);
         try {
             // Quietly save the phone number to the profile if it has changed
             if (phoneNumber && phoneNumber !== originalPhoneNumber) {
@@ -134,8 +149,16 @@ const Checkout = () => {
             }
 
             const response = await api.post('/orders/', {
-                items: checkoutItems.map(item => ({ id: item.id, quantity: item.quantity })),
-                address_id: selectedAddress
+                items: checkoutItems.map(item => ({ 
+                    id: item.id, 
+                    quantity: item.quantity,
+                    color: item.selected_color,
+                    is_build_header: item.is_build_header || false,
+                    build_id: item.build_id || null,
+                    build_metadata: item.build_metadata || null
+                })),
+                address_id: selectedAddress,
+                payment_method: selectedPayment === 'cod' ? 'COD' : (selectedPayment === 'upi' ? 'UPI' : 'Card')
             });
 
             const selectedAddrObj = addresses.find(a => a.id === selectedAddress);
@@ -322,18 +345,47 @@ const Checkout = () => {
                         <div className="animate-in fade-in duration-500">
                             <div className="checkout-card">
                                 <h3>Payment Method</h3>
-                                <div className="flex gap-4 mb-6">
+                                <div className="flex flex-col gap-3 mb-6">
                                     <button 
                                         onClick={() => setSelectedPayment('card')}
-                                        className={`flex-1 p-4 rounded-xl border-2 font-bold transition-all ${selectedPayment === 'card' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-100 bg-slate-50 text-slate-500'}`}
+                                        className={`flex items-center gap-4 p-4 rounded-2xl border-2 font-bold transition-all ${selectedPayment === 'card' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-100 bg-slate-50 text-slate-500 hover:border-slate-200'}`}
                                     >
-                                        💳 Card
+                                        <div className={`p-2 rounded-xl ${selectedPayment === 'card' ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                                            <CreditCard size={20} />
+                                        </div>
+                                        <div className="text-left">
+                                            <span className="block text-sm">Credit / Debit Card</span>
+                                            <span className="block text-[10px] font-medium opacity-70">Secure Payment via Razorpay</span>
+                                        </div>
+                                        {selectedPayment === 'card' && <CheckCircle size={20} className="ml-auto" />}
                                     </button>
+
                                     <button 
                                         onClick={() => setSelectedPayment('upi')}
-                                        className={`flex-1 p-4 rounded-xl border-2 font-bold transition-all ${selectedPayment === 'upi' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-100 bg-slate-50 text-slate-500'}`}
+                                        className={`flex items-center gap-4 p-4 rounded-2xl border-2 font-bold transition-all ${selectedPayment === 'upi' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-slate-100 bg-slate-50 text-slate-500 hover:border-slate-200'}`}
                                     >
-                                        📱 UPI
+                                        <div className={`p-2 rounded-xl ${selectedPayment === 'upi' ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                                            <Smartphone size={20} />
+                                        </div>
+                                        <div className="text-left">
+                                            <span className="block text-sm">UPI / GPay</span>
+                                            <span className="block text-[10px] font-medium opacity-70">Instant Pay via UPI ID</span>
+                                        </div>
+                                        {selectedPayment === 'upi' && <CheckCircle size={20} className="ml-auto" />}
+                                    </button>
+
+                                    <button 
+                                        onClick={() => setSelectedPayment('cod')}
+                                        className={`flex items-center gap-4 p-4 rounded-2xl border-2 font-bold transition-all hover:border-slate-200 ${selectedPayment === 'cod' ? 'border-emerald-600 bg-emerald-50 text-emerald-700' : 'border-slate-100 bg-slate-50 text-slate-500'}`}
+                                    >
+                                        <div className={`p-2 rounded-xl ${selectedPayment === 'cod' ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                                            <Banknote size={20} />
+                                        </div>
+                                        <div className="text-left">
+                                            <span className="block text-sm">Cash on Delivery</span>
+                                            <span className="block text-[10px] font-medium opacity-70">Pay when you receive package</span>
+                                        </div>
+                                        {selectedPayment === 'cod' && <CheckCircle size={20} className="ml-auto" />}
                                     </button>
                                 </div>
 
@@ -351,9 +403,16 @@ const Checkout = () => {
                                             </div>
                                         </div>
                                     </div>
-                                ) : (
+                                ) : selectedPayment === 'upi' ? (
                                     <div className="checkout-input-box">
                                         <input type="text" placeholder="Enter UPI ID (e.g. name@upi)" value={upiId} onChange={e => setUpiId(e.target.value)} />
+                                    </div>
+                                ) : (
+                                    <div className="p-4 bg-amber-50 rounded-xl border border-amber-100 flex items-start gap-3">
+                                        <span className="text-xl">ℹ️</span>
+                                        <p className="text-xs text-amber-800 font-medium leading-relaxed">
+                                            10% Advance Payment Required. To enable Cash on Delivery, you must pay an advance of 10% now. The remaining 90% balance will be collected by our delivery executive upon receiving your package.
+                                        </p>
                                     </div>
                                 )}
                             </div>
@@ -367,7 +426,7 @@ const Checkout = () => {
                             </div>
 
                             <button className="checkout-continue-btn" onClick={handlePlaceOrder} disabled={placingOrder}>
-                                {placingOrder ? 'Processing...' : 'Place Order'}
+                                {placingOrder ? 'Processing...' : (selectedPayment === 'cod' ? 'Pay 10% Advance & Order' : 'Place Order')}
                             </button>
                         </div>
                     )}
@@ -380,7 +439,7 @@ const Checkout = () => {
                     {checkoutItems.map((item, idx) => (
                         <div key={`${item.id}-${idx}`} className="mb-4">
                             <div className="checkout-row">
-                                <span>{item.name}</span>
+                                <span>{item.name} {item.selected_color && <small style={{ color: '#666', marginLeft: '5px' }}>({item.selected_color})</small>}</span>
                                 <span>{formatCurrency(item.price * item.quantity)}</span>
                             </div>
                             <p className="checkout-qty-info">Qty: {item.quantity}</p>
@@ -390,7 +449,7 @@ const Checkout = () => {
                     <hr className="checkout-hr" />
 
                     <div className="checkout-row">
-                        <span>Subtotal</span>
+                        <span>Items Total</span>
                         <span>{formatCurrency(checkoutTotal)}</span>
                     </div>
 
@@ -399,15 +458,51 @@ const Checkout = () => {
                         <span className="checkout-free-text">Free</span>
                     </div>
 
+                    {selectedPayment === 'cod' && (
+                        <div className="checkout-row text-emerald-600 font-bold">
+                            <span>COD Handling Fee</span>
+                            <span>{formatCurrency(49)}</span>
+                        </div>
+                    )}
+
                     <hr className="checkout-hr" />
 
                     <div className="checkout-total-row">
-                        <span>Total</span>
-                        <span>{formatCurrency(checkoutTotal)}</span>
+                        <span>Grand Total</span>
+                        <span>{formatCurrency(selectedPayment === 'cod' ? checkoutTotal + 49 : checkoutTotal)}</span>
                     </div>
+
+                    {selectedPayment === 'cod' && (
+                        <div className="mt-6 p-4 bg-blue-50 rounded-2xl border border-blue-100 flex flex-col gap-3">
+                            <div className="flex justify-between items-center">
+                                <span className="text-xs font-bold text-blue-800">10% Advance (Pay Now)</span>
+                                <span className="text-sm font-black text-blue-900">{formatCurrency((checkoutTotal + 49) * 0.10)}</span>
+                            </div>
+                            <div className="flex justify-between items-center opacity-60">
+                                <span className="text-[10px] font-bold text-blue-800 uppercase">90% COD Balance</span>
+                                <span className="text-xs font-black text-blue-900">{formatCurrency((checkoutTotal + 49) * 0.90)}</span>
+                            </div>
+                            <div className="pt-2 border-t border-blue-100 mt-1 flex items-start gap-2">
+                                <ShieldCheck size={14} className="text-blue-500 mt-0.5" />
+                                <p className="text-[10px] text-blue-700 font-medium leading-relaxed">
+                                    Remaining amount will be collected by the delivery agent upon receiving your package.
+                                </p>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
             </div>
+
+            <PaymentModal 
+                isOpen={showPaymentModal} 
+                onClose={() => setShowPaymentModal(false)}
+                amount={selectedPayment === 'cod' ? (checkoutTotal + 49) * 0.10 : checkoutTotal}
+                onPaymentSuccess={finalizeOrder}
+                title={selectedPayment === 'cod' ? 'COD Advance Payment' : 'Secure Order Payment'}
+                subtitle={selectedPayment === 'cod' ? '10% Partial Advance' : 'Full Payment'}
+                initialMethod={selectedPayment === 'cod' ? null : selectedPayment}
+            />
         </div>
     );
 };

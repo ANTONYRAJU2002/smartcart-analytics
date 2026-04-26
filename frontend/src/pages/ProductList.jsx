@@ -2,7 +2,12 @@ import { useEffect, useState, useMemo, useContext } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
-import { Search, ShoppingCart, Filter, X, Star, ChevronRight, SlidersHorizontal, Heart } from 'lucide-react';
+import { 
+    Search, ShoppingCart, Filter, X, Star, 
+    ChevronRight, SlidersHorizontal, Heart,
+    ChevronDown, ChevronUp, LayoutGrid
+} from 'lucide-react';
+import { formatImageUrl, handleImageError } from '../utils/imageUtils';
 
 const ProductList = () => {
     const { user } = useContext(AuthContext);
@@ -27,6 +32,7 @@ const ProductList = () => {
     const [selectedBrands, setSelectedBrands] = useState(initialBrands);
     const [selectedSpecs, setSelectedSpecs] = useState({}); // { 'Processor': ['Core i5'], 'RAM': ['16 GB'] }
     const [sortOrder, setSortOrder] = useState('relevance');
+    const [isCategoryListExpanded, setIsCategoryListExpanded] = useState(true);
 
     const categories = [
         'Laptops',
@@ -314,8 +320,18 @@ const ProductList = () => {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-2 mb-2">
                         <div className="flex-1">
                             <h2 className="text-sm font-bold text-slate-900">
-                                Showing {filteredProducts.length} results {searchTerm && `for "${searchTerm}"`}
+                                Showing {filteredProducts.length} items
                             </h2>
+                        </div>
+                        {/* Mobile Filter Toggle */}
+                        <div className="mobile-only">
+                            <button 
+                                onClick={() => setShowMobileFilters(!showMobileFilters)}
+                                className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-1.5 rounded-lg text-sm font-bold text-slate-700"
+                            >
+                                <Filter size={16} />
+                                Filters
+                            </button>
                         </div>
                         {/* Search Input in Results Bar - Centered */}
                         <div className="flex-1 flex justify-center">
@@ -335,9 +351,9 @@ const ProductList = () => {
                 </div>
             </div>
 
-            <div className="container shop-container-fk">
+            <div className={`container shop-container-fk ${showMobileFilters ? 'show-filters-mobile' : ''}`}>
                 {/* Filters Sidebar */}
-                <aside className="sidebar-fk">
+                <aside className={`sidebar-fk ${showMobileFilters ? 'block' : 'hidden md:block'}`}>
                     <div className="sidebar-fk-header">
                         <h2>Filters</h2>
                     </div>
@@ -348,48 +364,43 @@ const ProductList = () => {
                         <div className="filter-options-fk">
                             <div className="mb-2">
                                 <button
-                                    onClick={() => handleCategoryClick(selectedCategory)} // Clicking this when unselected does nothing, handled conditionally below
-                                    className={`text-[14px] text-left py-2 px-3 w-full rounded font-medium transition-colors ${!selectedCategory ? 'bg-blue-50 text-blue-600 border border-blue-200 shadow-sm' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'}`}
-                                    onClickCapture={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setSelectedCategory('');
-                                        setSelectedSubCategory('');
-                                        applyFilters({ category: '' });
-                                    }}
+                                    onClick={() => setIsCategoryListExpanded(!isCategoryListExpanded)}
+                                    className={`text-[14px] text-left py-2.5 px-3 w-full rounded font-bold transition-all flex items-center justify-between border ${!selectedCategory ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
                                 >
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <LayoutGrid size={16} />
                                         <span>All Products</span>
-                                        {!selectedCategory && <ChevronRight size={14} />}
                                     </div>
+                                    {isCategoryListExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                                 </button>
                             </div>
-                            {categories.map(cat => (
-                                <div key={cat} className="mb-2">
-                                    <button
-                                        onClick={() => handleCategoryClick(cat)}
-                                        className={`text-[14px] text-left py-2 px-3 w-full rounded font-medium transition-colors ${selectedCategory === cat ? 'bg-blue-50 text-blue-600 border border-blue-200 shadow-sm' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'}`}
-                                    >
-                                        <div className="flex items-center justify-between">
+
+                            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isCategoryListExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                {categories.map(cat => (
+                                    <div key={cat} className="mb-1">
+                                        <button
+                                            onClick={() => handleCategoryClick(cat)}
+                                            className={`text-[13.5px] text-left py-2 px-3 w-full rounded font-medium transition-colors flex items-center justify-between ${selectedCategory === cat ? 'bg-blue-600 text-white shadow-sm' : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-blue-600'}`}
+                                        >
                                             <span>{cat}</span>
-                                            {selectedCategory === cat && <ChevronRight size={14} />}
-                                        </div>
-                                    </button>
-                                    {selectedCategory === cat && dynamicSubCategories.length > 0 && (
-                                        <div className="pl-4 pr-2 flex flex-col gap-1 mt-2 mb-3 border-l-2 border-blue-100 ml-2">
-                                            {dynamicSubCategories.map(sub => (
-                                                <button
-                                                    key={sub}
-                                                    onClick={() => handleSubCategoryClick(sub)}
-                                                    className={`text-[13px] text-left py-1.5 px-2 rounded transition-colors ${selectedSubCategory === sub ? 'font-bold bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
-                                                >
-                                                    {sub}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                                            {selectedCategory === cat ? <ChevronRight size={14} className="rotate-90" /> : <ChevronRight size={14} className="opacity-40" />}
+                                        </button>
+                                        {selectedCategory === cat && dynamicSubCategories.length > 0 && (
+                                            <div className="pl-4 pr-1 flex flex-col gap-1 mt-1 mb-2 border-l-2 border-blue-100 ml-3 py-1">
+                                                {dynamicSubCategories.map(sub => (
+                                                    <button
+                                                        key={sub}
+                                                        onClick={() => handleSubCategoryClick(sub)}
+                                                        className={`text-[12.5px] text-left py-1.5 px-3 rounded transition-colors ${selectedSubCategory === sub ? 'font-bold bg-blue-100 text-blue-700' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'}`}
+                                                    >
+                                                        {sub}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
@@ -489,7 +500,13 @@ const ProductList = () => {
                                         {/* Row Left: Image */}
                                         <div className="product-image-col-fk">
                                             <div className="relative group p-2">
-                                                <img src={p.image_url} alt={p.name} className="product-img-fk" loading="lazy" />
+                                                <img 
+                                                    src={formatImageUrl(p.image_url)} 
+                                                    alt={p.name} 
+                                                    className="product-img-fk" 
+                                                    loading="lazy" 
+                                                    onError={handleImageError}
+                                                />
                                                 <button
                                                     onClick={(e) => handleToggleWishlist(e, p.id)}
                                                     className={`absolute top-0 right-0 p-2 transition-all`}
@@ -502,6 +519,7 @@ const ProductList = () => {
                                         {/* Row Center: Specs & Info */}
                                         <div className="product-info-col-fk">
                                             <h3 className="product-title-fk group-hover:text-blue-600 transition-colors">{p.name}</h3>
+                                            {/* 
                                             <div className="product-rating-row-fk">
                                                 <div className="rating-badge-fk">
                                                     {p.avg_rating || '4.2'} <Star size={10} className="fill-white" />
@@ -510,6 +528,7 @@ const ProductList = () => {
                                                     {(p.review_count || 1205).toLocaleString()} Ratings & {Math.floor((p.review_count || 1205) / 5)} Reviews
                                                 </span>
                                             </div>
+                                            */}
                                             <ul className="product-specs-fk">
                                                 {p.brand && <li><span className="font-semibold text-slate-700">Brand:</span> {p.brand}</li>}
                                                 {getTopSpecs(p.specifications).map(([key, value]) => (

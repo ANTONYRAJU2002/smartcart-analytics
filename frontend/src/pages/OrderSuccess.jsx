@@ -139,7 +139,7 @@ const OrderSuccess = () => {
                             <div className="order-success-detail-row">
                                 <Smartphone size={18} />
                                 <div className="order-success-detail-content">
-                                    <p>{phoneNumber}</p>
+                                    <p>{phoneNumber || '9961228320'}</p>
                                 </div>
                             </div>
 

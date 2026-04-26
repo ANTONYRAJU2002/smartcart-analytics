@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { ShoppingCart, ArrowRight, Star, Headphones, Monitor, Watch, Search, Music, Zap, Shield, CheckCircle, Quote } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import gamingHero from '../assets/gaming-hero.png';
-import laptopHero from '../assets/laptop-hero.png';
-import componentsHero from '../assets/components-hero.png';
+import gamingHero from '../assets/hero-gaming.jpg';
+import internalsHero from '../assets/hero-internals.jpg';
+import laptopHero from '../assets/hero-laptop.jpg';
+import { formatImageUrl, handleImageError } from '../utils/imageUtils';
 import './Home.css';
 
 const Home = () => {
@@ -13,8 +14,6 @@ const Home = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentSlide, setCurrentSlide] = useState(0);
-    const sliderRef = useRef(null);
-    const imgRefs = useRef([]);
 
     const slides = [
         {
@@ -24,16 +23,16 @@ const Home = () => {
             image: gamingHero
         },
         {
-            title: "Premium Laptops",
-            description: "Ultra-thin, powerful laptops designed for creative professionals and hardcore gamers. Find your perfect balance of portability and power.",
-            buttonText: "Explore",
-            image: laptopHero
+            title: "Engineered for Speed",
+            description: "Built with premium components for maximum reliability and peak performance. The heart of your next-gen setup.",
+            buttonText: "Explore Parts",
+            image: internalsHero
         },
         {
-            title: "Build Your PC",
-            description: "Custom components for your dream setup. From high-end GPUs to ultra-fast SSDs, find everything you need to build your masterpiece.",
-            buttonText: "Start Build",
-            image: componentsHero
+            title: "Performance on the Go",
+            description: "Power meets portability in our refined laptop lineup. Modern aesthetics with professional-grade capabilities.",
+            buttonText: "View Range",
+            image: laptopHero
         }
     ];
 
@@ -51,60 +50,89 @@ const Home = () => {
         fetchProducts();
     }, []);
 
-    // AUTO SLIDER
+    // AUTO SLIDER & SWIPE LOGIC
+    const [touchStart, setTouchStart] = useState(null);
+    const [touchEnd, setTouchEnd] = useState(null);
+    const minSwipeDistance = 50;
+
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % slides.length);
-        }, 3000);
+        }, 5000); // Increased interval for better UX
         return () => clearInterval(interval);
     }, [slides.length]);
 
-    // 3D MOUSE EFFECT
-    useEffect(() => {
-        const handleMouseMove = (e) => {
-            const x = (window.innerWidth / 2 - e.pageX) / 25;
-            const y = (window.innerHeight / 2 - e.pageY) / 25;
+    const onTouchStart = (e) => {
+        setTouchEnd(null);
+        setTouchStart(e.targetTouches[0].clientX);
+    };
 
-            imgRefs.current.forEach(img => {
-                if (img) {
-                    img.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
-                }
-            });
-        };
+    const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
 
-        document.addEventListener("mousemove", handleMouseMove);
-        return () => document.removeEventListener("mousemove", handleMouseMove);
-    }, []);
+    const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+        
+        if (isLeftSwipe) {
+            setCurrentSlide((prev) => (prev + 1) % slides.length);
+        } else if (isRightSwipe) {
+            setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+        }
+    };
 
     return (
         <div className="home-page home-page-root">
             {/* HERO SLIDER */}
-            <section className="hero">
+            <section 
+                className="hero"
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+            >
                 <div 
                     className="slider" 
-                    ref={sliderRef}
                     style={{ transform: `translateX(-${currentSlide * 100}%)` }}
                 >
                     {slides.map((slide, index) => (
                         <div key={index} className={`slide ${currentSlide === index ? 'active' : ''}`}>
+                            {/* GRADIENT OVERLAY FOR BLENDING */}
+                            <div className="hero-overlay"></div>
+                            
                             {/* LEFT CONTENT */}
                             <div className="hero-text">
                                 <h1>{slide.title}</h1>
                                 <p>{slide.description}</p>
-                                <button className="btn-premium" onClick={() => navigate('/products')}>
-                                    {slide.buttonText}
-                                </button>
+                                <div className="hero-actions">
+                                    <button className="btn-premium" onClick={() => navigate(slide.path || '/products')}>
+                                        {slide.buttonText}
+                                        <ArrowRight className="btn-icon" size={20} />
+                                    </button>
+                                </div>
                             </div>
 
                             {/* RIGHT IMAGE */}
                             <div className="hero-img">
+                                <div className="img-glow"></div>
                                 <img 
                                     src={slide.image} 
                                     alt={slide.title}
-                                    ref={el => imgRefs.current[index] = el}
+                                    loading={index === 0 ? "eager" : "lazy"}
                                 />
                             </div>
                         </div>
+                    ))}
+                </div>
+                
+                {/* SLIDER DOTS */}
+                <div className="slider-dots">
+                    {slides.map((_, i) => (
+                        <div 
+                            key={i} 
+                            className={`dot ${currentSlide === i ? 'active' : ''}`}
+                            onClick={() => setCurrentSlide(i)}
+                        ></div>
                     ))}
                 </div>
             </section>
@@ -122,10 +150,14 @@ const Home = () => {
                             <p>Loading products...</p>
                         ) : (
                             products.map(product => (
-                                <div key={product.id} className="card" onClick={() => navigate(`/product/${product.id}`)}>
-                                    <img src={product.image_url || gamingHero} alt={product.name} />
+                                <div key={product.id} className="card" onClick={() => navigate(`/products/${product.id}`)}>
+                                    <img 
+                                        src={formatImageUrl(product.image_url)} 
+                                        alt={product.name} 
+                                        onError={handleImageError}
+                                    />
                                     <h3>{product.name}</h3>
-                                    <p>${product.price}</p>
+                                    <p>₹{(product.price || 0).toLocaleString('en-IN')}</p>
                                 </div>
                             ))
                         )}

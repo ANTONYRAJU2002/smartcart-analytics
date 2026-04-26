@@ -238,3 +238,32 @@
   cursor: not-allowed;
   box-shadow: none;
 }
+
+/* New Modern Payment Styles */
+.border-emerald-600 {
+  border-color: #059669 !important;
+}
+.bg-emerald-50 {
+  background-color: #ecfdf5 !important;
+}
+.text-emerald-700 {
+  color: #047857 !important;
+}
+.bg-emerald-600 {
+  background-color: #059669 !important;
+}
+
+.hover\:border-slate-200:hover {
+  border-color: #e2e8f0;
+}
+
+.checkout-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Animation for the summary items */
+.checkout-row {
+  transition: all 0.3s ease;
+}

@@ -9,6 +9,7 @@ import StaffPortal from './pages/StaffPortal';
 import StaffLanding from './pages/StaffLanding';
 import Home from './pages/Home';
 import ProductDetails from './pages/ProductDetails';
+import CustomPC from './pages/CustomPC';
 
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
@@ -20,7 +21,7 @@ import Orders from './pages/Orders';
 import ProductList from './pages/ProductList';
 import AdminLayout from './components/AdminLayout';
 import MainLayout from './components/MainLayout';
-import AdminProductList from './pages/admin/ProductList';
+import AdminProductList from './pages/admin/AdminProductManagement';
 import OrderList from './pages/admin/OrderList';
 import UserList from './pages/admin/UserList';
 import StaffManagement from './pages/admin/StaffManagement';
@@ -29,6 +30,9 @@ import CustomerSegments from './pages/admin/CustomerSegments';
 import ProductAssociations from './pages/admin/ProductAssociations';
 import AdminSupport from './pages/admin/TicketManager';
 import ReviewManager from './pages/admin/ReviewManager';
+import AdminCSVUpload from './pages/admin/AdminCSVUpload';
+import StaffTargetsManager from './pages/admin/StaffTargetsManager';
+import DeliveryDashboard from './pages/DeliveryDashboard';
 
 const PrivateRoute = ({ children, roles }) => {
   const { user, loading } = useContext(AuthContext);
@@ -55,6 +59,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<ProductList />} />
               <Route path="/products/:id" element={<ProductDetails />} />
+              <Route path="/custom-pc" element={<CustomPC />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<PrivateRoute roles={['customer', 'admin']}><Checkout /></PrivateRoute>} />
               <Route path="/order-success" element={<PrivateRoute roles={['customer', 'admin']}><OrderSuccess /></PrivateRoute>} />
@@ -105,11 +110,16 @@ function App() {
               <Route path="orders" element={<OrderList />} />
               <Route path="users" element={<UserList />} />
               <Route path="staff-management" element={<StaffManagement />} />
+              <Route path="staff" element={<StaffManagement />} />
+              <Route path="targets" element={<StaffTargetsManager />} />
               <Route path="offline" element={<OfflineSalesList />} />
               <Route path="segments" element={<CustomerSegments />} />
               <Route path="associations" element={<ProductAssociations />} />
               <Route path="reviews" element={<ReviewManager />} />
               <Route path="support" element={<AdminSupport />} />
+              <Route path="analytics" element={<Dashboard />} />
+              <Route path="live-analytics" element={<Dashboard />} />
+              <Route path="upload" element={<AdminCSVUpload />} />
             </Route>
 
             {/* Staff Routes */}
@@ -118,6 +128,14 @@ function App() {
               element={
                 <PrivateRoute roles={['staff', 'admin']}>
                   <StaffPortal />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/delivery"
+              element={
+                <PrivateRoute roles={['delivery_agent', 'admin']}>
+                  <DeliveryDashboard />
                 </PrivateRoute>
               }
             />

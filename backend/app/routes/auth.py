@@ -4,6 +4,8 @@ from app.models import User
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 auth_bp = Blueprint('auth', __name__)
+ALLOWED_ROLES = {'customer', 'staff', 'delivery_agent', 'admin'}
+APPROVAL_REQUIRED_ROLES = {'staff', 'delivery_agent'}
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -12,13 +14,13 @@ def register():
     email = data.get('email')
     password = data.get('password')
     role = data.get('role', 'customer') # Default to customer
+    if role not in ALLOWED_ROLES:
+        return jsonify({"msg": "Invalid role selected"}), 400
 
     if User.query.filter_by(username=username).first() or User.query.filter_by(email=email).first():
         return jsonify({"msg": "User already exists"}), 400
 
-    is_approved = True
-    if role == 'staff':
-        is_approved = False
+    is_approved = role not in APPROVAL_REQUIRED_ROLES
 
     new_user = User(username=username, email=email, role=role, is_approved=is_approved)
     new_user.set_password(password)
@@ -35,7 +37,7 @@ def login():
 
     user = User.query.filter((User.username == username) | (User.email == username)).first()
     if user and user.check_password(password):
-        if user.role == 'staff' and not user.is_approved:
+        if user.role in APPROVAL_REQUIRED_ROLES and not user.is_approved:
             return jsonify({"msg": "Account pending approval"}), 403
             
         access_token = create_access_token(identity=str(user.id))
@@ -59,15 +61,18 @@ def profile():
     if not user:
         return jsonify({"msg": "User not found"}), 404
 
-    # Calculate stats
+    # Calculate stats safely (guard against None values)
     total_orders = user.orders.count()
-    total_spent = sum(order.total_amount for order in user.orders)
+    total_spent = sum((order.total_amount or 0) for order in user.orders)
     
     return jsonify({
+        "id": user.id,
         "username": user.username,
         "email": user.email,
         "role": user.role,
         "phone_number": user.phone_number,
+        "profile_pic": user.profile_pic,
+        "bio": user.bio,
         "total_orders": total_orders,
         "total_spent": total_spent
     }), 200
@@ -84,6 +89,21 @@ def update_profile():
     data = request.get_json()
     if 'phone_number' in data:
         user.phone_number = data['phone_number']
+    if 'username' in data:
+        # Check if already exists
+        existing = User.query.filter_by(username=data['username']).first()
+        if existing and existing.id != user.id:
+            return jsonify({"msg": "Username already taken"}), 400
+        user.username = data['username']
+    if 'email' in data:
+        existing = User.query.filter_by(email=data['email']).first()
+        if existing and existing.id != user.id:
+            return jsonify({"msg": "Email already taken"}), 400
+        user.email = data['email']
+    if 'profile_pic' in data:
+        user.profile_pic = data['profile_pic']
+    if 'bio' in data:
+        user.bio = data['bio']
         
     db.session.commit()
     return jsonify({"msg": "Profile updated successfully"}), 200

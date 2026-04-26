@@ -40,9 +40,8 @@ def upload_file():
             file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
             file.save(file_path)
             
-            # Generate URL
-            # Assuming backend is serving static files from /static
-            url = f"http://localhost:5000/static/uploads/{unique_filename}"
+            # Generate relative URL for host-agnostic storage
+            url = f"/static/uploads/{unique_filename}"
             uploaded_urls.append(url)
             
     return jsonify({'urls': uploaded_urls}), 201

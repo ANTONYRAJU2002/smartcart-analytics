@@ -20,6 +20,17 @@ def create_review(product_id):
     if not product:
         return jsonify({'error': 'Product not found'}), 404
 
+    # Verification: User must have purchased this product and order must be delivered/completed
+    from app.models import Order, OrderItem
+    has_purchased = db.session.query(OrderItem).join(Order).filter(
+        Order.user_id == user_id,
+        OrderItem.product_id == product_id,
+        Order.status.in_(['delivered', 'completed'])
+    ).first()
+
+    if not has_purchased:
+        return jsonify({'error': 'You can only review products you have purchased and received.'}), 403
+
     # Using request.form to support multipart/form-data for file uploads
     data = request.form
     rating = data.get('rating')
@@ -36,10 +47,9 @@ def create_review(product_id):
     except ValueError:
         return jsonify({'error': 'Rating must be an integer'}), 400
 
-    # Check for existing review
     existing_review = Review.query.filter_by(user_id=user_id, product_id=product_id).first()
     if existing_review:
-        return jsonify({'error': 'You have already reviewed this product'}), 400
+        return jsonify({'error': 'You have already reviewed this product.'}), 400
 
     if 'image' in request.files:
         file = request.files['image']
@@ -163,4 +173,23 @@ def admin_comment_review(review_id):
         'message': 'Admin comment updated successfully',
         'review_id': review.id,
         'admin_comment': review.admin_comment
+    }), 200
+
+@reviews_bp.route('/api/products/<int:product_id>/check_purchase', methods=['GET'])
+@jwt_required()
+def check_purchase(product_id):
+    user_id = get_jwt_identity()
+    from app.models import Order, OrderItem
+    has_purchased = db.session.query(OrderItem).join(Order).filter(
+        Order.user_id == user_id,
+        OrderItem.product_id == product_id,
+        Order.status.in_(['delivered', 'completed'])
+    ).first()
+    
+    # Also check if already reviewed
+    already_reviewed = Review.query.filter_by(user_id=user_id, product_id=product_id).first()
+    
+    return jsonify({
+        'has_purchased': has_purchased is not None,
+        'already_reviewed': already_reviewed is not None
     }), 200

@@ -1,8 +1,9 @@
 import { useState, useContext } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingCart, User, Search, Menu, X, LogOut, Heart } from 'lucide-react';
+import { ShoppingCart, User, Search, Menu, X, LogOut, Heart, Home, LayoutGrid } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import FloatingChatbot from './FloatingChatbot';
 
 const MainLayout = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -33,7 +34,7 @@ const MainLayout = () => {
             <header className="main-navbar">
                 <div className="container nav-container">
                     {/* Logo */}
-                    <Link to="/" className="nav-brand logo">
+                    <Link to="/portal" className="nav-brand logo">
                         <div className="brand-icon">S</div>
                         <span className="logo-text">SmartCart</span>
                     </Link>
@@ -42,6 +43,7 @@ const MainLayout = () => {
                     <div className="nav-links desktop-only">
                         <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`}>Home</Link>
                         <Link to="/products" className={`nav-link ${isActive('/products') ? 'active' : ''}`}>Shop</Link>
+                        <Link to="/custom-pc" className={`nav-link ${isActive('/custom-pc') ? 'active' : ''}`}>Custom PC</Link>
                         <Link to="/support" className={`nav-link ${isActive('/support') ? 'active' : ''}`}>Support</Link>
                         <Link to="/orders" className={`nav-link ${isActive('/orders') ? 'active' : ''}`}>Orders</Link>
                     </div>
@@ -73,7 +75,15 @@ const MainLayout = () => {
                         </Link>
 
                         {user ? (
-                            <div className="user-menu">
+                            <div className="user-menu" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <button 
+                                    onClick={handleLogout} 
+                                    className="icon-btn logout-btn" 
+                                    title="Logout"
+                                    style={{ color: '#ef4444', backgroundColor: '#fef2f2' }}
+                                >
+                                    <LogOut size={18} />
+                                </button>
                                 <Link to="/profile" className="user-profile-link">
                                     <div className="avatar-small">
                                         <User size={18} />
@@ -89,9 +99,21 @@ const MainLayout = () => {
                     </div>
 
                     {/* Mobile Menu Toggle */}
-                    <button className="mobile-menu-btn mobile-only" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
+                    <div className="nav-actions mobile-only" style={{ display: 'flex', gap: '8px' }}>
+                        <Link to="/cart" className="icon-btn" title="Cart">
+                             <div style={{ position: 'relative' }}>
+                                <ShoppingCart size={20} />
+                                {cart.length > 0 && (
+                                    <span className="cart-badge" style={{ position: 'absolute', top: '-8px', right: '-8px' }}>
+                                        {cart.reduce((acc, item) => acc + item.quantity, 0)}
+                                    </span>
+                                )}
+                            </div>
+                        </Link>
+                        <button className="mobile-menu-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        </button>
+                    </div>
                 </div>
 
                 {/* Mobile Menu */}
@@ -112,6 +134,7 @@ const MainLayout = () => {
                             <div className="mobile-links">
                                 <Link to="/" className="sidebar-link" onClick={() => setIsMenuOpen(false)}>Home</Link>
                                 <Link to="/products" className="sidebar-link" onClick={() => setIsMenuOpen(false)}>Shop</Link>
+                                <Link to="/custom-pc" className="sidebar-link" onClick={() => setIsMenuOpen(false)}>Custom PC</Link>
                                 <Link to="/support" className="sidebar-link" onClick={() => setIsMenuOpen(false)}>Support</Link>
                                 <Link to="/orders" className="sidebar-link" onClick={() => setIsMenuOpen(false)}>Orders</Link>
                                 <Link to="/wishlist" className="sidebar-link" onClick={() => setIsMenuOpen(false)}>Wishlist</Link>
@@ -123,6 +146,9 @@ const MainLayout = () => {
                                         <Link to="/profile" className="sidebar-link" onClick={() => setIsMenuOpen(false)}>
                                             <User size={18} className="mr-2" /> Profile
                                         </Link>
+                                        <button className="sidebar-link text-rose-600 w-full text-left" onClick={() => { handleLogout(); setIsMenuOpen(false); }}>
+                                            <LogOut size={18} className="mr-2" /> Logout
+                                        </button>
                                     </>
                                 ) : (
                                     <Link to="/login" className="btn btn-primary w-full justify-center" onClick={() => setIsMenuOpen(false)}>
@@ -137,19 +163,21 @@ const MainLayout = () => {
             </header >
 
             {/* Main Content */}
-            < main className="main-content" >
+            <main className="main-content">
                 <Outlet />
-            </main >
+            </main>
 
-            {/* Footer */}
-            < footer className="site-footer" >
+
+
+            {/* Footer - Hidden on Mobile for cleaner view */}
+            <footer className="site-footer desktop-only">
                 <div className="container">
                     <div className="footer-grid">
                         <div className="footer-section">
-                            <div className="footer-brand">
+                            <Link to="/portal" className="footer-brand">
                                 <div className="brand-icon">S</div>
                                 SmartCart
-                            </div>
+                            </Link>
                             <p className="footer-text">
                                 Premium electronics for the modern professional. Experience the future of technology today.
                             </p>
@@ -189,6 +217,9 @@ const MainLayout = () => {
                     </div>
                 </div>
             </footer >
+
+            {/* AI Custom Floating Chat Widget */}
+            <FloatingChatbot />
         </div >
     );
 };

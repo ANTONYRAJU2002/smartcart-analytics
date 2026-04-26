@@ -13,6 +13,8 @@
     "@playwright/test": "^1.58.2",
     "axios": "^1.13.3",
     "chart.js": "^4.5.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.563.0",
     "react": "^19.2.0",
     "react-chartjs-2": "^5.3.1",

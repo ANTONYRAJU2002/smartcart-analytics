@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { X, Plus, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
 
-const CategoryManager = ({ onClose }) => {
+const CategoryManager = ({ onClose, onUpdate }) => {
     const [categories, setCategories] = useState([]);
     const [newCategory, setNewCategory] = useState('');
     const [newSubCategory, setNewSubCategory] = useState({ categoryId: null, name: '' });
@@ -30,24 +30,32 @@ const CategoryManager = ({ onClose }) => {
 
     const handleAddCategory = async (e) => {
         e.preventDefault();
-        if (!newCategory.trim()) return;
+        if (!newCategory.trim()) {
+            return;
+        }
         try {
             await api.post('/products/categories', { name: newCategory });
             setNewCategory('');
             fetchCategories();
+            if (onUpdate) onUpdate();
         } catch (err) {
+            console.error("Failed to add category:", err);
             alert(err.response?.data?.msg || "Failed to add category");
         }
     };
 
     const handleAddSubCategory = async (catId) => {
-        if (!newSubCategory.name.trim()) return;
+        if (!newSubCategory.name.trim()) {
+            return;
+        }
         try {
             await api.post(`/products/categories/${catId}/subcategories`, { name: newSubCategory.name });
             setNewSubCategory({ categoryId: null, name: '' });
             fetchCategories();
             setExpandedCats(prev => ({ ...prev, [catId]: true }));
+            if (onUpdate) onUpdate();
         } catch (err) {
+            console.error("Failed to add subcategory:", err);
             alert(err.response?.data?.msg || "Failed to add subcategory");
         }
     };
@@ -57,6 +65,7 @@ const CategoryManager = ({ onClose }) => {
         try {
             await api.delete(`/products/categories/${id}`);
             fetchCategories();
+            if (onUpdate) onUpdate();
         } catch (err) {
             alert(err.response?.data?.msg || "Failed to delete category");
         }
@@ -67,13 +76,14 @@ const CategoryManager = ({ onClose }) => {
         try {
             await api.delete(`/products/subcategories/${id}`);
             fetchCategories();
+            if (onUpdate) onUpdate();
         } catch (err) {
             alert(err.response?.data?.msg || "Failed to delete subcategory");
         }
     };
 
     return (
-        <div className="panel w-full max-w-lg p-6 bg-white rounded-lg shadow-xl relative animate-slide-up mx-4 max-h-[90vh] flex flex-col">
+        <div className="glass-panel w-full max-w-lg p-6 bg-white rounded-[2.5rem] shadow-2xl relative animate-slide-up mx-4 max-h-[90vh] flex flex-col border border-white/20">
             <button
                 onClick={onClose}
                 className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
@@ -91,7 +101,7 @@ const CategoryManager = ({ onClose }) => {
                     className="form-input flex-1"
                     placeholder="New primary category..."
                 />
-                <button type="submit" className="btn btn-primary px-4 flex items-center gap-2">
+                <button type="submit" className="btn-premium btn-premium-publish px-6 py-2.5 rounded-xl flex items-center gap-2 font-bold hover:scale-105 active:scale-95 transition-all shadow-lg shadow-indigo-100">
                     <Plus size={18} /> Category
                 </button>
             </form>
@@ -141,7 +151,7 @@ const CategoryManager = ({ onClose }) => {
                                             className="form-input text-sm py-1"
                                             placeholder="Subcategory name..."
                                         />
-                                        <button onClick={() => handleAddSubCategory(cat.id)} className="btn btn-primary text-xs px-3">Add</button>
+                                        <button onClick={() => handleAddSubCategory(cat.id)} className="btn-primary text-[10px] px-3 py-1 rounded-md font-bold uppercase tracking-wider shadow-sm">Add</button>
                                         <button onClick={() => setNewSubCategory({ categoryId: null, name: '' })} className="text-slate-400 text-xs px-2 hover:text-slate-600">Cancel</button>
                                     </div>
                                 )}

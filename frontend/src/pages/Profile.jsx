@@ -20,9 +20,11 @@ const Profile = () => {
         street: '', city: '', state: '', zip_code: '', country: '' 
     });
 
-    const { logout } = useContext(AuthContext);
+    const { logout, user: authUser, loading: authLoading } = useContext(AuthContext);
+    const [fetchError, setFetchError] = useState(false);
 
     const fetchProfileData = async () => {
+        setFetchError(false);
         try {
             const [profRes, addrRes] = await Promise.all([
                 api.get('/auth/profile'),
@@ -32,14 +34,22 @@ const Profile = () => {
             setAddresses(addrRes.data);
         } catch (err) {
             console.error("Failed to load profile", err);
+            setFetchError(true);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchProfileData();
-    }, []);
+        // Wait for global auth check to finish before fetching
+        if (authLoading) return;
+        if (authUser) {
+            fetchProfileData();
+        } else {
+            // User is definitely not logged in
+            setLoading(false);
+        }
+    }, [authLoading, authUser]);
 
     const handleAddressSubmit = async (e) => {
         e.preventDefault();
@@ -98,8 +108,14 @@ const Profile = () => {
     };
 
 
-    if (loading) return <div className="profile-page-wrapper flex items-center justify-center">Loading Profile...</div>;
-    if (!profile) return <div className="profile-page-wrapper flex items-center justify-center text-red-500 font-bold">Please login to view profile</div>;
+    if (authLoading || loading) return <div className="profile-page-wrapper flex items-center justify-center">Loading Profile...</div>;
+    if (!authUser) return <div className="profile-page-wrapper flex items-center justify-center text-red-500 font-bold">Please login to view profile</div>;
+    if (fetchError || !profile) return (
+        <div className="profile-page-wrapper flex items-center justify-center flex-col gap-4">
+            <p className="text-red-500 font-bold">Failed to load profile data.</p>
+            <button onClick={fetchProfileData} className="btn btn-primary">Retry</button>
+        </div>
+    );
 
     return (
         <div className="profile-page-wrapper">

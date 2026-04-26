@@ -96,7 +96,7 @@ const ReviewManager = () => {
                                     <td className="px-6 py-4 align-top max-w-sm">
                                         <p className="text-sm text-slate-700 line-clamp-3 mb-2">{review.comment}</p>
                                         {review.image_url && (
-                                            <a href={`http://127.0.0.1:5000${review.image_url}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition-colors">
+                                            <a href={review.image_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition-colors">
                                                 <ImageIcon size={12} /> View Attached Photo
                                             </a>
                                         )}

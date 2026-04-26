@@ -22,6 +22,8 @@ const Login = () => {
                 navigate('/admin');
             } else if (data.role === 'staff') {
                 navigate('/staff');
+            } else if (data.role === 'delivery_agent') {
+                navigate('/delivery');
             } else {
                 navigate('/');
             }

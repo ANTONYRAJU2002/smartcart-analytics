@@ -22,7 +22,7 @@ def create_app(config_class=Config):
     db.init_app(app)
     jwt.init_app(app)
     cache.init_app(app)
-    CORS(app)
+    CORS(app, resources={r"/api/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173", "*"]}}, supports_credentials=True)
 
     # Register Blueprints
     from app.routes.main import main_bp

@@ -1,0 +1,112 @@
+/* Wishlist Specific Styles */
+.wishlist-page {
+    padding-bottom: 100px;
+}
+
+/* MOBILE ADAPTIVE VIEW (MAX-WIDTH: 768PX) */
+@media (max-width: 768px) {
+    .order-page {
+        padding: 12px;
+    }
+
+    .order-title {
+        font-size: 22px;
+        margin-bottom: 4px;
+    }
+
+    .order-subtitle {
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    /* Transform List to 2-Column Grid */
+    .order-page {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .order-card {
+        grid-template-columns: 1fr;
+        padding: 12px;
+        gap: 8px;
+        text-align: center;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        margin-bottom: 0;
+    }
+
+    .order-image {
+        width: 100%;
+        height: 140px;
+        margin: 0 auto;
+    }
+
+    .order-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .order-details {
+        text-align: left;
+        width: 100%;
+    }
+
+    .order-details h3 {
+        font-size: 14px;
+        height: 36px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        margin-bottom: 4px;
+    }
+
+    .order-details p {
+        font-size: 11px;
+        margin: 0;
+    }
+
+    .order-price {
+        font-size: 16px;
+        text-align: left;
+        width: 100%;
+        margin: 4px 0;
+    }
+
+    .order-actions {
+        width: 100%;
+        margin-top: auto;
+    }
+
+    .order-actions .buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .order-actions .view {
+        width: 100%;
+        font-size: 12px;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    /* Fixed Remove Button */
+    .order-actions .cancel {
+        width: 100%;
+        font-size: 12px;
+        padding: 8px;
+        border-radius: 8px;
+        margin-right: 0;
+        background: #f1f5f9 !important;
+        color: #ef4444 !important;
+        border: 1px solid #fee2e2 !important;
+        font-weight: 600;
+    }
+}

@@ -1,0 +1,82 @@
+﻿On branch master
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   backend/app/analytics/data_loader.py
+	modified:   backend/app/models.py
+	modified:   backend/app/routes/admin.py
+	modified:   backend/app/routes/analytics.py
+	modified:   backend/app/routes/auth.py
+	modified:   backend/app/routes/offline.py
+	modified:   backend/app/routes/orders.py
+	modified:   backend/app/routes/products.py
+	modified:   backend/app/routes/reviews.py
+	modified:   backend/app/routes/support.py
+	modified:   backend/seed_categories.py
+	modified:   backend/update_db.py
+	modified:   frontend/index.html
+	modified:   frontend/package-lock.json
+	modified:   frontend/package.json
+	modified:   frontend/src/App.css
+	modified:   frontend/src/App.jsx
+	modified:   frontend/src/assets/components-hero.png
+	modified:   frontend/src/assets/gaming-hero.png
+	modified:   frontend/src/assets/laptop-hero.png
+	modified:   frontend/src/components/AdminLayout.jsx
+	modified:   frontend/src/components/MainLayout.jsx
+	modified:   frontend/src/index.css
+	modified:   frontend/src/pages/Dashboard.jsx
+	modified:   frontend/src/pages/Home.css
+	modified:   frontend/src/pages/Home.jsx
+	modified:   frontend/src/pages/Orders.jsx
+	modified:   frontend/src/pages/ProductDetails.css
+	modified:   frontend/src/pages/ProductDetails.jsx
+	modified:   frontend/src/pages/StaffPortal.jsx
+	modified:   frontend/src/pages/Support.jsx
+	modified:   frontend/src/pages/admin/CategoryManager.jsx
+	modified:   frontend/src/pages/admin/OfflineSalesList.jsx
+	modified:   frontend/src/pages/admin/OrderDetail.jsx
+	modified:   frontend/src/pages/admin/OrderList.jsx
+	modified:   frontend/src/pages/admin/ProductForm.jsx
+	deleted:    frontend/src/pages/admin/ProductList.jsx
+	modified:   frontend/src/pages/admin/StaffManagement.jsx
+	modified:   frontend/src/pages/admin/TicketManager.jsx
+	modified:   frontend/src/pages/admin/UserList.jsx
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	backend/add_offline_fields.py
+	backend/check_admin.py
+	backend/create_dummy_returns.py
+	backend/debug_products.py
+	backend/diag_alex.py
+	backend/elevate_user.py
+	backend/reset_password.py
+	backend/seed_offline_sales.py
+	backend/setup_test_review.py
+	backend/static/uploads/9883631c0f1a4d539f238c08da102ca6_Screenshot_2026-03-21_135444.png
+	backend/static/uploads/a992bbfd366d4a3ba88b45e721e21891_Screenshot_2026-03-21_135434.png
+	backend/static/uploads/aa4e08d3512c4601b7450fe36d1295ff_face_4.jpeg
+	backend/static/uploads/f50bb28cab07428ab7853e2f51baf1d3_Screenshot_2026-03-21_135455.png
+	backend/sync_db.py
+	backend/temp_verify.py
+	diff.txt
+	frontend/eslint_out.json
+	frontend/eslint_output.txt
+	frontend/eslint_verify.txt
+	frontend/public/offline_sales_sample.csv
+	frontend/src/admin_premium.css
+	frontend/src/admin_products.css
+	frontend/src/assets/hero-gaming-ultra.png
+	frontend/src/assets/hero-gaming.jpg
+	frontend/src/assets/hero-internals-ultra.png
+	frontend/src/assets/hero-internals.jpg
+	frontend/src/assets/hero-laptop-ultra.png
+	frontend/src/assets/hero-laptop.jpg
+	frontend/src/components/ReviewModal.jsx
+	frontend/src/pages/admin/AdminProductManagement.jsx
+	frontend/src/support_premium.css
+	status.txt
+	tmp/
+
+no changes added to commit (use "git add" and/or "git commit -a")

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { Package, Heart, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { formatImageUrl, handleImageError } from '../utils/imageUtils';
+import './Wishlist.css';
 
 const Wishlist = () => {
     const [wishlist, setWishlist] = useState([]);
@@ -95,12 +97,16 @@ const Wishlist = () => {
                         <p className="order-subtitle">Manage and track your saved items.</p>
 
                         {wishlist.map(product => (
-                            <div key={product.id} className="order-card" style={{ cursor: 'pointer' }} onClick={() => navigate(`/products/${product.id}`)}>
+                            <div key={product.id} className="order-card wishlist-card" onClick={() => navigate(`/products/${product.id}`)}>
                                 
                                 {/* Product Image */}
                                 <div className="order-image">
                                     {product.image_url ? (
-                                        <img src={product.image_url} alt={product.name} />
+                                        <img 
+                                            src={formatImageUrl(product.image_url)} 
+                                            alt={product.name} 
+                                            onError={handleImageError}
+                                        />
                                     ) : (
                                         <div className="w-full h-full bg-slate-50 flex items-center justify-center">
                                             <Package className="text-slate-300" size={32} />

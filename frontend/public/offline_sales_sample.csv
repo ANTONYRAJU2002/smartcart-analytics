@@ -1,0 +1,4 @@
+Sale ID,Staff ID,Staff Name,Product ID,Product Name,Category,Sub Category,Quantity,Price,Offline Discount,Payment Method,Date
+OFF-20240315-X9Y2,EMP001,John Doe,1,MacBook Pro 16",Laptops,High Performance,1,249900,10000,Card,2024-03-15
+OFF-20240316-Z8W1,EMP002,Jane Smith,2,Logitech MX Master 3S,Accessories,Mice & Keyboards,2,9500,500,UPI,2024-03-16
+OFF-20240317-Q5R8,EMP001,John Doe,3,Dell UltraSharp 27",Monitors,Professional,1,45000,2000,Cash,2024-03-17

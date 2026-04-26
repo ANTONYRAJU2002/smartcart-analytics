@@ -1,15 +1,27 @@
 import pandas as pd
 from app import db
-from app.models import Order, OrderItem, Product, OfflineSales
+from app.models import Order, OrderItem, Product, OfflineSales, Return, User
 
-def load_combined_sales_data(start_date=None, end_date=None):
+def load_combined_sales_data(start_date=None, end_date=None, month=None, year=None):
     """
     Fetch Online Orders and Offline Sales, combine into a single DataFrame.
-    Schema: ['date', 'amount', 'profit', 'source']
+    Includes adjustments for returns.
     """
+    if year:
+        from datetime import date
+        year = int(year)
+        if month:
+            month = int(month)
+            start_date = date(year, month, 1).strftime('%Y-%m-%d')
+            if month == 12:
+                end_date = date(year + 1, 1, 1).strftime('%Y-%m-%d')
+            else:
+                end_date = date(year, month + 1, 1).strftime('%Y-%m-%d')
+        else:
+            start_date = date(year, 1, 1).strftime('%Y-%m-%d')
+            end_date = date(year + 1, 1, 1).strftime('%Y-%m-%d')
+
     # 1. Online Sales
-    # Profit = (Price - Cost) * Qty
-    # We need to join OrderItem with Product to get cost
     online_query = db.session.query(
         Order.timestamp, 
         OrderItem.quantity, 
@@ -21,67 +33,103 @@ def load_combined_sales_data(start_date=None, end_date=None):
     if start_date:
         online_query = online_query.filter(Order.timestamp >= start_date)
     if end_date:
-        online_query = online_query.filter(Order.timestamp <= end_date)
+        online_query = online_query.filter(Order.timestamp < end_date) # Use strictly less than for boundaries
         
     online_df = pd.read_sql(online_query.statement, db.engine)
     
     if not online_df.empty:
         online_df['date'] = online_df['timestamp'].dt.date
         online_df['amount'] = online_df['quantity'] * online_df['price_at_purchase']
-        online_df['profit'] = online_df['quantity'] * (online_df['price_at_purchase'] - online_df['cost_price'])
+        online_df['profit'] = online_df['quantity'] * (online_df['price_at_purchase'] - online_df['cost_price'].fillna(0))
         online_df['source'] = 'Online'
-        online_sales = online_df[['date', 'amount', 'profit', 'source']].groupby(['date', 'source']).sum().reset_index()
+        online_sales = online_df[['date', 'amount', 'profit', 'source']]
     else:
         online_sales = pd.DataFrame(columns=['date', 'amount', 'profit', 'source'])
 
     # 2. Offline Sales
     offline_query = db.session.query(OfflineSales)
-    
     if start_date:
         offline_query = offline_query.filter(OfflineSales.date >= start_date)
     if end_date:
-        offline_query = offline_query.filter(OfflineSales.date <= end_date)
+        offline_query = offline_query.filter(OfflineSales.date < end_date)
 
     offline_df = pd.read_sql(offline_query.statement, db.engine)
     
     if not offline_df.empty:
-        offline_df['amount'] = offline_df['total_sales']
-        offline_df['profit'] = offline_df['total_profit']
+        offline_df['amount'] = offline_df['total_amount']
+        # Profit = (Price - Cost) * Qty
+        offline_df['profit'] = offline_df['quantity'] * (offline_df['price'] - offline_df['cost_price'].fillna(0))
         offline_df['source'] = 'Offline'
         offline_sales_cleaned = offline_df[['date', 'amount', 'profit', 'source']]
     else:
         offline_sales_cleaned = pd.DataFrame(columns=['date', 'amount', 'profit', 'source'])
 
-    # 3. Combine
+    # 3. Returns Adjustment (for Offline)
+    return_query = db.session.query(Return)
+    if start_date:
+        return_query = return_query.filter(Return.return_date >= start_date)
+    if end_date:
+        return_query = return_query.filter(Return.return_date < end_date)
+    
+    return_df = pd.read_sql(return_query.statement, db.engine)
+    if not return_df.empty:
+        return_df['date'] = pd.to_datetime(return_df['return_date']).dt.date
+        return_df['amount'] = -return_df['refund_amount']
+        # For simplicity, assume return profit loss is the full refund amount minus cost recovered? 
+        # But we don't store cost in return. Let's just subtract refund_amount from profit too for now 
+        # (conservative estimate) or just subtract the revenue.
+        return_df['profit'] = -return_df['refund_amount'] 
+        return_df['source'] = 'Offline'
+        returns_cleaned = return_df[['date', 'amount', 'profit', 'source']]
+        offline_sales_cleaned = pd.concat([offline_sales_cleaned, returns_cleaned], ignore_index=True)
+
+    # 4. Combine and group by date
     combined_df = pd.concat([online_sales, offline_sales_cleaned], ignore_index=True)
     if not combined_df.empty:
         combined_df['date'] = pd.to_datetime(combined_df['date'])
+        combined_df = combined_df.groupby(['date', 'source']).sum().reset_index()
+    
     return combined_df
 
 def load_order_items_data():
     """
     Load data for Market Basket Analysis.
-    Returns list of transactions (list of product names).
+    Combines Online and Offline transactions.
     """
+    # 1. Online Transactions
     orders = Order.query.all()
     transactions = []
     for order in orders:
-        items = [item.product.name for item in order.items]
+        items = [item.product.name for item in order.items if item.product]
         if items:
             transactions.append(items)
+    
+    # 2. Offline Transactions (Grouped by sale_id)
+    offline_sales = OfflineSales.query.all()
+    from collections import defaultdict
+    offline_trans = defaultdict(list)
+    for sale in offline_sales:
+        if sale.product_name:
+            offline_trans[sale.sale_id].append(sale.product_name)
+    
+    for items in offline_trans.values():
+        if items:
+            transactions.append(items)
+            
     return transactions
 
 def load_customer_rfm_data():
     """
     Load data for RFM Analysis (Online only).
-    Returns DataFrame with UserID, Recency, Frequency, Monetary.
+    Returns DataFrame with UserID, Username, Recency, Frequency, Monetary.
     """
     query = db.session.query(
         Order.user_id,
+        User.username,
         Order.id.label('order_id'),
         Order.timestamp,
         Order.total_amount
-    ).statement
+    ).join(User, Order.user_id == User.id).statement
     
     df = pd.read_sql(query, db.engine)
     
@@ -90,11 +138,12 @@ def load_customer_rfm_data():
 
     now = df['timestamp'].max() # Or datetime.utcnow()
     
-    rfm = df.groupby('user_id').agg({
+    # Aggregate but keep username
+    rfm = df.groupby(['user_id', 'username']).agg({
         'timestamp': lambda x: (now - x.max()).days, # Recency
         'order_id': 'count', # Frequency
         'total_amount': 'sum' # Monetary
     }).reset_index()
     
-    rfm.columns = ['user_id', 'recency', 'frequency', 'monetary']
+    rfm.columns = ['user_id', 'username', 'recency', 'frequency', 'monetary']
     return rfm
