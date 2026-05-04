@@ -85,6 +85,7 @@ const StaffPortal = () => {
     const [profile, setProfile] = useState(null);
     const [returnsHistory, setReturnsHistory] = useState([]);
     const [returnsFilter, setReturnsFilter] = useState('');
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
     // Helper to generate unique Sale ID
     const generateSaleID = () => {
@@ -118,6 +119,11 @@ const StaffPortal = () => {
             setIsGlobal(true);
         }
     }, [user?.role]);
+
+    // Clear messages when changing tabs to prevent misleading errors on unrelated pages
+    useEffect(() => {
+        setMessage(null);
+    }, [activeTab]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -360,7 +366,7 @@ const StaffPortal = () => {
             setMessage({ type: 'success', text: `✅ Sale recorded: ${res.data.sale_id}` });
             setFormData({
                 ...formData,
-                sale_id: generateSaleID(),
+                'sale_id': res.data.sale_id,
                 product_id: '',
                 product_name: '',
                 category: '',
@@ -376,6 +382,13 @@ const StaffPortal = () => {
             setIsBuildMode(false);
             setBuildComponents([{ id: Date.now(), name: '', price: '' }]);
             setBuildTitle('Custom Gaming PC Build');
+            
+            // Show Success Popup
+            setShowSuccessPopup(true);
+            setTimeout(() => {
+                setShowSuccessPopup(false);
+            }, 1000);
+
             // Refresh history & stats after successful sale
             try {
                 const statsRes = await api.get('/offline/stats');
@@ -408,114 +421,125 @@ const StaffPortal = () => {
     };
 
     const handleDownloadReceipt = (sale) => {
-        const doc = new jsPDF();
+        try {
+            const doc = new jsPDF();
 
-        // Header
-        doc.setFontSize(22);
-        doc.setTextColor(74, 108, 247);
-        doc.text("SMART CART", 105, 20, { align: "center" });
+            // Header
+            doc.setFontSize(22);
+            doc.setTextColor(74, 108, 247);
+            doc.text("SMART CART", 105, 20, { align: "center" });
 
-        doc.setFontSize(14);
-        doc.setTextColor(100);
-        doc.text("OFFLINE SALES RECEIPT", 105, 30, { align: "center" });
-
-        doc.setLineWidth(0.5);
-        doc.line(20, 35, 190, 35);
-
-        // Details
-        doc.setFontSize(10);
-        doc.setTextColor(0);
-        doc.text(`Sale ID: ${sale.sale_id}`, 20, 45);
-        doc.text(`Date & Time: ${sale.created_at || sale.date}`, 20, 52);
-        doc.text(`Staff: ${sale.staff}`, 20, 59);
-
-        doc.text("CUSTOMER INFORMATION", 120, 45);
-        doc.text(`Name: ${sale.customer_name || 'N/A'}`, 120, 52);
-        doc.text(`Phone: ${sale.customer_phone || 'N/A'}`, 120, 59);
-
-        // Product Table
-        autoTable(doc, {
-            startY: 70,
-            head: [['Product', 'Category', 'Qty', 'Price', 'Discount', 'Total']],
-            body: [[
-                sale.product,
-                sale.category || 'N/A',
-                sale.quantity,
-                `Rs. ${sale.price.toLocaleString()}`,
-                `Rs. ${(sale.discount || 0).toLocaleString()}`,
-                `Rs. ${sale.amount.toLocaleString()}`
-            ]],
-            headStyles: { fillColor: [74, 108, 247] },
-            alternateRowStyles: { fillColor: [248, 250, 252] },
-        });
-
-        const finalY = (doc).lastAutoTable.finalY + 15;
-
-        doc.setFontSize(12);
-        doc.text(`Payment Mode: ${sale.method}`, 20, finalY);
-        doc.setFontSize(16);
-        doc.text(`Grand Total: Rs. ${sale.amount.toLocaleString()}`, 190, finalY, { align: 'right' });
-
-        if (sale.notes) {
-            doc.setFontSize(10);
-            doc.text("Notes:", 20, finalY + 15);
-            doc.setFontSize(9);
+            doc.setFontSize(14);
             doc.setTextColor(100);
-            doc.text(sale.notes, 20, finalY + 22);
+            doc.text("OFFLINE SALES RECEIPT", 105, 30, { align: "center" });
+
+            doc.setLineWidth(0.5);
+            doc.line(20, 35, 190, 35);
+
+            // Details
+            doc.setFontSize(10);
+            doc.setTextColor(0);
+            doc.text(`Sale ID: ${sale?.sale_id || 'N/A'}`, 20, 45);
+            doc.text(`Date & Time: ${sale?.created_at || sale?.date || 'N/A'}`, 20, 52);
+            doc.text(`Staff: ${sale?.staff || 'N/A'}`, 20, 59);
+
+            doc.text("CUSTOMER INFORMATION", 120, 45);
+            doc.text(`Name: ${sale?.customer_name || 'N/A'}`, 120, 52);
+            doc.text(`Phone: ${sale?.customer_phone || 'N/A'}`, 120, 59);
+
+            // Product Table
+            autoTable(doc, {
+                startY: 70,
+                head: [['Product', 'Category', 'Qty', 'Price', 'Discount', 'Total']],
+                body: [[
+                    sale?.product || 'Unknown Product',
+                    sale?.category || 'N/A',
+                    sale?.quantity || 0,
+                    `Rs. ${(sale?.price || 0).toLocaleString()}`,
+                    `Rs. ${(sale?.discount || 0).toLocaleString()}`,
+                    `Rs. ${(sale?.amount || 0).toLocaleString()}`
+                ]],
+                headStyles: { fillColor: [74, 108, 247] },
+                alternateRowStyles: { fillColor: [248, 250, 252] },
+            });
+
+            // Use doc.lastAutoTable.finalY or fallback to a safe position
+            const finalY = (doc.lastAutoTable?.finalY || 100) + 15;
+
+            doc.setFontSize(12);
+            doc.text(`Payment Mode: ${sale?.method || 'N/A'}`, 20, finalY);
+            doc.setFontSize(16);
+            doc.text(`Grand Total: Rs. ${(sale?.amount || 0).toLocaleString()}`, 190, finalY, { align: 'right' });
+
+            if (sale?.notes) {
+                doc.setFontSize(10);
+                doc.text("Notes:", 20, finalY + 15);
+                doc.setFontSize(9);
+                doc.setTextColor(100);
+                doc.text(sale.notes, 20, finalY + 22);
+            }
+
+            doc.setFontSize(10);
+            doc.setTextColor(150);
+            doc.text("Thank you for your purchase!", 105, 280, { align: "center" });
+
+            doc.save(`Receipt_${sale?.sale_id || 'sale'}.pdf`);
+        } catch (err) {
+            console.error("PDF Generation failed", err);
+            alert("Failed to generate PDF. Please try again.");
         }
-
-        doc.setFontSize(10);
-        doc.setTextColor(150);
-        doc.text("Thank you for your purchase!", 105, 280, { align: "center" });
-
-        doc.save(`Receipt_${sale.sale_id}.pdf`);
     };
 
     const handleDownloadReturnReceipt = (refund) => {
-        const doc = new jsPDF();
+        try {
+            const doc = new jsPDF();
 
-        // Header
-        doc.setFontSize(22);
-        doc.setTextColor(251, 146, 60); // Orange for returns
-        doc.text("SMART CART", 105, 20, { align: "center" });
+            // Header
+            doc.setFontSize(22);
+            doc.setTextColor(251, 146, 60); // Orange for returns
+            doc.text("SMART CART", 105, 20, { align: "center" });
 
-        doc.setFontSize(14);
-        doc.setTextColor(100);
-        doc.text("REFUND / RETURN RECEIPT", 105, 30, { align: "center" });
+            doc.setFontSize(14);
+            doc.setTextColor(100);
+            doc.text("REFUND / RETURN RECEIPT", 105, 30, { align: "center" });
 
-        doc.setLineWidth(0.5);
-        doc.line(20, 35, 190, 35);
+            doc.setLineWidth(0.5);
+            doc.line(20, 35, 190, 35);
 
-        // Details
-        doc.setFontSize(10);
-        doc.setTextColor(0);
-        doc.text(`Original Sale ID: ${refund.sale_id}`, 20, 45);
-        doc.text(`Return Date: ${refund.return_date || refund.date}`, 20, 52);
-        doc.text(`Staff: ${refund.staff_name || 'N/A'}`, 20, 59);
+            // Details
+            doc.setFontSize(10);
+            doc.setTextColor(0);
+            doc.text(`Original Sale ID: ${refund?.sale_id || 'N/A'}`, 20, 45);
+            doc.text(`Return Date: ${refund?.return_date || refund?.date || 'N/A'}`, 20, 52);
+            doc.text(`Staff: ${refund?.staff_name || 'N/A'}`, 20, 59);
 
-        // Refund Table
-        autoTable(doc, {
-            startY: 70,
-            head: [['Product', 'Qty Returned', 'Refund Amount', 'Reason']],
-            body: [[
-                refund.product_name,
-                refund.quantity_returned,
-                `Rs. ${refund.refund_amount.toLocaleString()}`,
-                refund.return_reason || 'N/A'
-            ]],
-            headStyles: { fillColor: [251, 146, 60] },
-        });
+            // Refund Table
+            autoTable(doc, {
+                startY: 70,
+                head: [['Product', 'Qty Returned', 'Refund Amount', 'Reason']],
+                body: [[
+                    refund?.product_name || 'Unknown',
+                    refund?.quantity_returned || 0,
+                    `Rs. ${(refund?.refund_amount || 0).toLocaleString()}`,
+                    refund?.return_reason || 'N/A'
+                ]],
+                headStyles: { fillColor: [251, 146, 60] },
+            });
 
-        const finalY = (doc).lastAutoTable.finalY + 15;
+            const finalY = (doc.lastAutoTable?.finalY || 100) + 15;
 
-        doc.setFontSize(16);
-        doc.text(`Total Refund: Rs. ${refund.refund_amount.toLocaleString()}`, 190, finalY, { align: 'right' });
+            doc.setFontSize(16);
+            doc.text(`Total Refund: Rs. ${(refund?.refund_amount || 0).toLocaleString()}`, 190, finalY, { align: 'right' });
 
-        doc.setFontSize(10);
-        doc.setTextColor(150);
-        doc.text("This is an official refund confirmation.", 105, 280, { align: "center" });
+            doc.setFontSize(10);
+            doc.setTextColor(150);
+            doc.text("This is an official refund confirmation.", 105, 280, { align: "center" });
 
-        doc.save(`Refund_${refund.sale_id}.pdf`);
+            doc.save(`Refund_${refund?.sale_id || 'return'}.pdf`);
+        } catch (err) {
+            console.error("PDF Generation failed", err);
+            alert("Failed to generate PDF. Please try again.");
+        }
     };
 
     const handlePhotoUpload = async (e) => {
@@ -653,7 +677,7 @@ const StaffPortal = () => {
         };
 
         // Payment Data (NEW)
-        const pSplit = (analysis?.payment_split || []).filter(p => p.name !== 'Card');
+        const pSplit = (analysis?.payment_split || []);
         const payLabels = pSplit.length > 0 ? pSplit.map(p => p.name) : ['UPI', 'Cash', 'Credit Card', 'Debit Card'];
         const payAmounts = pSplit.length > 0 ? pSplit.map(p => p.value) : [0, 0, 0, 0];
 
@@ -777,9 +801,6 @@ const StaffPortal = () => {
                         <li className={activeTab === 'entry' ? 'active' : ''} onClick={() => setActiveTab('entry')}>
                             <PlusCircle size={20} /> <span>Sales Entry</span>
                         </li>
-                        <li className={activeTab === 'upload' ? 'active' : ''} onClick={() => setActiveTab('upload')}>
-                            <Upload size={20} /> <span>CSV Upload</span>
-                        </li>
                         <li className={activeTab === 'returns' ? 'active' : ''} onClick={() => setActiveTab('returns')}>
                             <RotateCcw size={20} /> <span>Returns</span>
                         </li>
@@ -794,6 +815,9 @@ const StaffPortal = () => {
                         </li>
                         <li className={activeTab === 'tickets' ? 'active' : ''} onClick={() => setActiveTab('tickets')}>
                             <MessageSquare size={20} /> <span>Tickets</span>
+                        </li>
+                        <li className={activeTab === 'upload' ? 'active' : ''} onClick={() => setActiveTab('upload')}>
+                            <Upload size={20} /> <span>CSV Upload</span>
                         </li>
                         <li className={activeTab === 'profile' ? 'active' : ''} onClick={() => setActiveTab('profile')}>
                             <UserCircle size={20} /> <span>Profile</span>
@@ -1863,7 +1887,15 @@ const StaffPortal = () => {
                                                     onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
                                                     onMouseLeave={e => e.currentTarget.style.background = 'white'}
                                                 >
-                                                    <td style={{ padding: '14px 18px', fontFamily: 'monospace', fontSize: '0.75rem', color: '#4a6cf7', fontWeight: 700, whiteSpace: 'nowrap' }}>{s.sale_id}</td>
+                                                    <td style={{ padding: '14px 18px', fontFamily: 'monospace', fontSize: '0.75rem', color: '#4a6cf7', fontWeight: 700, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        {s.sale_id}
+                                                        {!!s.is_returned && (
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '4px' }}>
+                                                                <span style={{ background: '#ef4444', color: 'white', fontSize: '0.65rem', padding: '2px 6px', borderRadius: '6px', fontWeight: 900, boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)' }}>R</span>
+                                                                <span style={{ color: '#ef4444', fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.02em' }}>RETURNED</span>
+                                                            </div>
+                                                        )}
+                                                    </td>
                                                     <td style={{ padding: '14px 18px', whiteSpace: 'nowrap' }}>
                                                         <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.8rem' }}>{s.date}</div>
                                                         <div style={{ color: '#94a3b8', fontSize: '0.70rem' }}>{s.created_at || '—'}</div>
@@ -1894,13 +1926,23 @@ const StaffPortal = () => {
                                                             >
                                                                 <Eye size={16} />
                                                             </button>
+                                                            {!s.is_returned && (
+                                                                <button
+                                                                    onClick={() => { setReturnId(s.sale_id); setReturnQty(s.quantity); setActiveTab('returns'); }}
+                                                                    className="hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-colors"
+                                                                    style={{ padding: '6px', borderRadius: '8px', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                                                                    title="Return Products"
+                                                                >
+                                                                    <RotateCcw size={16} />
+                                                                </button>
+                                                            )}
                                                             <button
                                                                 onClick={() => handleDownloadReceipt(s)}
                                                                 className="hover:bg-green-50 text-slate-400 hover:text-green-600 transition-colors"
                                                                 style={{ padding: '6px', borderRadius: '8px', border: 'none', background: 'transparent', cursor: 'pointer' }}
                                                                 title="Download Receipt"
                                                             >
-                                                                <Download size={16} />
+                                                                    <Download size={16} />
                                                             </button>
                                                         </div>
                                                     </td>
@@ -2114,7 +2156,7 @@ const StaffPortal = () => {
                         <div style={{ background: '#f8fafc', padding: '24px 32px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div>
                                 <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>Sale Details</h2>
-                                <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>{selectedSale.sale_id}</p>
+                                <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>{selectedSale?.sale_id}</p>
                             </div>
                             <button onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '8px', borderRadius: '50%', transition: 'all 0.2s', display: 'flex' }} onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -2126,16 +2168,16 @@ const StaffPortal = () => {
                                 <div>
                                     <h4 style={{ margin: '0 0 12px', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94a3b8', fontWeight: 800 }}>Transaction Info</h4>
                                     <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b', fontSize: '0.85rem' }}>Date</span><strong style={{ color: '#0f172a', fontSize: '0.85rem' }}>{selectedSale.created_at || selectedSale.date}</strong></div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b', fontSize: '0.85rem' }}>Staff</span><strong style={{ color: '#0f172a', fontSize: '0.85rem' }}>{selectedSale.staff}</strong></div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b', fontSize: '0.85rem' }}>Method</span><strong style={{ color: '#0f172a', fontSize: '0.85rem' }}>{selectedSale.method}</strong></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b', fontSize: '0.85rem' }}>Date</span><strong style={{ color: '#0f172a', fontSize: '0.85rem' }}>{selectedSale?.created_at || selectedSale?.date || 'N/A'}</strong></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b', fontSize: '0.85rem' }}>Staff</span><strong style={{ color: '#0f172a', fontSize: '0.85rem' }}>{selectedSale?.staff || 'N/A'}</strong></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b', fontSize: '0.85rem' }}>Method</span><strong style={{ color: '#0f172a', fontSize: '0.85rem' }}>{selectedSale?.method || 'N/A'}</strong></div>
                                     </div>
                                 </div>
                                 <div>
                                     <h4 style={{ margin: '0 0 12px', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94a3b8', fontWeight: 800 }}>Customer Info</h4>
                                     <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '12px', height: '100%' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b', fontSize: '0.85rem' }}>Name</span><strong style={{ color: '#0f172a', fontSize: '0.85rem' }}>{selectedSale.customer_name || '—'}</strong></div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b', fontSize: '0.85rem' }}>Phone</span><strong style={{ color: '#0f172a', fontSize: '0.85rem' }}>{selectedSale.customer_phone || '—'}</strong></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b', fontSize: '0.85rem' }}>Customer Name</span><strong style={{ color: '#0f172a', fontSize: '0.85rem' }}>{selectedSale?.customer_name || 'Not Provided'}</strong></div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b', fontSize: '0.85rem' }}>Phone Number</span><strong style={{ color: '#0f172a', fontSize: '0.85rem' }}>{selectedSale?.customer_phone || 'Not Provided'}</strong></div>
                                     </div>
                                 </div>
                             </div>
@@ -2153,20 +2195,20 @@ const StaffPortal = () => {
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td style={{ padding: '16px', fontSize: '0.85rem', color: '#0f172a', fontWeight: 600 }}>{selectedSale.product}<br /><span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>{selectedSale.category || ''}</span></td>
-                                                <td style={{ padding: '16px', textAlign: 'center', fontSize: '0.85rem', color: '#0f172a', fontWeight: 600 }}>{selectedSale.quantity}</td>
-                                                <td style={{ padding: '16px', textAlign: 'right', fontSize: '0.85rem', color: '#0f172a', fontWeight: 600 }}>₹{selectedSale.price.toLocaleString()}</td>
+                                                <td style={{ padding: '16px', fontSize: '0.85rem', color: '#0f172a', fontWeight: 600 }}>{selectedSale?.product}<br /><span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>{selectedSale?.category || ''}</span></td>
+                                                <td style={{ padding: '16px', textAlign: 'center', fontSize: '0.85rem', color: '#0f172a', fontWeight: 600 }}>{selectedSale?.quantity}</td>
+                                                <td style={{ padding: '16px', textAlign: 'right', fontSize: '0.85rem', color: '#0f172a', fontWeight: 600 }}>₹{(selectedSale?.price || (selectedSale?.amount / selectedSale?.quantity) || 0).toLocaleString()}</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
 
-                            {selectedSale.notes && (
+                            {selectedSale?.notes && (
                                 <div style={{ marginBottom: '32px' }}>
                                     <h4 style={{ margin: '0 0 12px', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94a3b8', fontWeight: 800 }}>Notes</h4>
                                     <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', color: '#334155', fontSize: '0.85rem', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
-                                        {selectedSale.notes}
+                                        {selectedSale?.notes}
                                     </div>
                                 </div>
                             )}
@@ -2174,10 +2216,10 @@ const StaffPortal = () => {
                             <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '20px 24px', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div>
                                     <span style={{ display: 'block', color: '#16a34a', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 800, marginBottom: '4px' }}>Total Amount</span>
-                                    {selectedSale.discount > 0 && <span style={{ color: '#047857', fontSize: '0.85rem' }}>Includes ₹{selectedSale.discount.toLocaleString()} discount</span>}
+                                    {selectedSale?.discount > 0 && <span style={{ color: '#047857', fontSize: '0.85rem' }}>Includes ₹{(selectedSale?.discount || 0).toLocaleString()} discount</span>}
                                 </div>
                                 <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#166534' }}>
-                                    ₹{selectedSale.amount.toLocaleString()}
+                                    ₹{(selectedSale?.amount || 0).toLocaleString()}
                                 </div>
                             </div>
                         </div>
@@ -3092,6 +3134,54 @@ const StaffPortal = () => {
                 }
             ` }} />
             <FloatingChatbot />
+            
+            {showSuccessPopup && (
+                <div style={{
+                    position: 'fixed',
+                    top: '20px',
+                    right: '20px',
+                    backgroundColor: '#10b981',
+                    color: 'white',
+                    padding: '12px 20px',
+                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2)',
+                    zIndex: 9999,
+                    animation: 'slideIn 0.3s ease-out'
+                }}>
+                    <CheckCircle2 size={20} />
+                    <span style={{ fontWeight: 600 }}>Record Saved</span>
+                    <button 
+                        onClick={() => setShowSuccessPopup(false)}
+                        style={{ 
+                            background: 'transparent', 
+                            border: 'none', 
+                            color: 'white', 
+                            cursor: 'pointer',
+                            padding: '2px',
+                            display: 'flex',
+                            marginLeft: '4px',
+                            opacity: 0.8
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.opacity = 1}
+                        onMouseLeave={e => e.currentTarget.style.opacity = 0.8}
+                    >
+                        <X size={16} />
+                    </button>
+                </div>
+            )}
+            <style>{`
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideDown {
+                    from { transform: translate(-50%, -100%); opacity: 0; }
+                    to { transform: translate(-50%, 0); opacity: 1; }
+                }
+            `}</style>
         </div>
     );
 };

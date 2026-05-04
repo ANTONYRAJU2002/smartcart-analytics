@@ -1,7 +1,7 @@
 import os
 import google.generativeai as genai
 
-api_key = "AIzaSyAuFDoSFMkxylsvpzO10QKHlhFhyeL4gec"
+api_key = "AIzaSyAvWXsAU3j_L5fSkB1pfkSeVABDM8J-XCA"
 genai.configure(api_key=api_key)
 
 available_models = []

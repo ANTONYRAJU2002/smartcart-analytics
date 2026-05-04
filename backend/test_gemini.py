@@ -3,7 +3,7 @@ import google.generativeai as genai
 import sys
 
 def test_ai():
-    api_key = "AIzaSyAuFDoSFMkxylsvpzO10QKHlhFhyeL4gec"
+    api_key = "AIzaSyAvWXsAU3j_L5fSkB1pfkSeVABDM8J-XCA"
     try:
         print(f"Configuring GenAI with key: {api_key[:10]}...")
         genai.configure(api_key=api_key)

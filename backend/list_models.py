@@ -2,7 +2,7 @@ import os
 import google.generativeai as genai
 
 def list_models():
-    api_key = "AIzaSyAuFDoSFMkxylsvpzO10QKHlhFhyeL4gec"
+    api_key = "AIzaSyAvWXsAU3j_L5fSkB1pfkSeVABDM8J-XCA"
     try:
         genai.configure(api_key=api_key)
         print("Supported Models:")

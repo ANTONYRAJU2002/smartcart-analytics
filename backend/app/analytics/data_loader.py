@@ -129,7 +129,12 @@ def load_customer_rfm_data():
         Order.id.label('order_id'),
         Order.timestamp,
         Order.total_amount
-    ).join(User, Order.user_id == User.id).statement
+    ).join(User, Order.user_id == User.id)\
+     .filter(~User.role.in_(['admin', 'staff', 'delivery_agent']))\
+     .filter(~User.username.ilike('%test%'))\
+     .filter(~User.username.ilike('%admin%'))\
+     .filter(~User.username.ilike('%staff%'))\
+     .statement
     
     df = pd.read_sql(query, db.engine)
     

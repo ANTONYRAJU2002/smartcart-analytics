@@ -3,7 +3,7 @@ import google.generativeai as genai
 import os
 
 def test_models():
-    api_key = "AIzaSyAuFDoSFMkxylsvpzO10QKHlhFhyeL4gec"
+    api_key = "AIzaSyAvWXsAU3j_L5fSkB1pfkSeVABDM8J-XCA"
     genai.configure(api_key=api_key)
     
     models_to_try = [

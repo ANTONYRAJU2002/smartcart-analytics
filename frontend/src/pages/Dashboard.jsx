@@ -183,8 +183,8 @@ const Dashboard = () => {
             };
         });
 
-        // Sort by revenue for leaderboard and assign ranks
-        const sortedLeaderboard = [...fullStaffList].sort((a, b) => b.revenue - a.revenue);
+        // Sort by target percentage for performance leaderboard
+        const sortedLeaderboard = [...fullStaffList].sort((a, b) => b.target_pct - a.target_pct);
 
         return { leaderboard: sortedLeaderboard, all_staff: fullStaffList };
     }, [staffPerf, allUsers, selectedMonth, selectedYear]);
@@ -389,8 +389,20 @@ const Dashboard = () => {
 
     const customerSegmentsData = useMemo(() => {
         if (!Array.isArray(mlData?.segments) || mlData.segments.length === 0) return { datasets: [] };
-        const clusters = { '0': '#10b981', '1': '#f59e0b', '2': '#ef4444', '3': '#6366f1' };
-        return { datasets: Object.keys(clusters).map(c => ({ label: `Cluster ${c}`, data: mlData.segments.filter(s => s.cluster == c).map(s => ({ x: safeNum(s.frequency), y: safeNum(s.monetary) })), backgroundColor: clusters[c], pointRadius: 6 })) };
+        
+        // Define a color palette for the different segments
+        const clusterColors = ['#10b981', '#6366f1', '#f59e0b', '#ec4899', '#8b5cf6'];
+        
+        return {
+            datasets: mlData.segments.map((s, i) => ({
+                label: s.label || `Segment ${s.cluster}`,
+                data: [{ x: safeNum(s.frequency), y: safeNum(s.monetary) }],
+                backgroundColor: clusterColors[i % clusterColors.length],
+                pointRadius: 10,
+                pointHoverRadius: 12,
+                showLine: false
+            }))
+        };
     }, [mlData]);
 
     const topProductsBarData = useMemo(() => {
@@ -422,7 +434,7 @@ const Dashboard = () => {
                 target_revenue,
                 target_pct: parseFloat(Math.min(target_pct, 150).toFixed(1))
             };
-        });
+        }).sort((a, b) => b.target_pct - a.target_pct);
     }, [chartStaffData, chartMonth, chartYear]);
 
     // Staff vs Target chart data
@@ -903,10 +915,6 @@ const Dashboard = () => {
                         {/* MACHINE LEARNING INSIGHTS - Integrated into Overview */}
                         <div className="pt-6 border-t border-slate-100 italic text-slate-400 text-[10px] uppercase tracking-widest mb-6">Machine Learning Insights</div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20">
-                            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
-                                <h3 className="flex items-center gap-2 text-lg font-black text-slate-900 tracking-tight mb-4 text-indigo-600"><Target size={20} /> User Segments (Clustering)</h3>
-                                <div className="h-[450px]"><Scatter data={customerSegmentsData} options={{ maintainAspectRatio: false }} /></div>
-                            </div>
                             <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm overflow-hidden flex flex-col">
                                 <h3 className="flex items-center gap-2 text-lg font-black text-slate-900 tracking-tight mb-4 text-emerald-600"><Network size={20} /> Product Associations</h3>
                                 <div className="overflow-auto pr-2 custom-scrollbar space-y-3">
@@ -1115,10 +1123,64 @@ const Dashboard = () => {
 
                 {/* TAB: CUSTOMER ANALYTICS */}
                 {activeTab === 'Customer Analytics' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20">
-                        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                            <h3 className="text-lg font-black text-slate-900 tracking-tight mb-6 text-emerald-600">High-Value Nodes</h3>
-                            <div className="h-[350px]"><Bar data={topCustomersData} options={{ maintainAspectRatio: false }} /></div>
+                    <div className="space-y-8 pb-20">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                                <h3 className="text-lg font-black text-slate-900 tracking-tight mb-6 text-emerald-600">High-Value Nodes</h3>
+                                <div className="h-[350px]"><Bar data={topCustomersData} options={{ maintainAspectRatio: false }} /></div>
+                            </div>
+                            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+                                <h3 className="flex items-center gap-2 text-lg font-black text-slate-900 tracking-tight mb-4 text-indigo-600"><Target size={20} /> User Segments (Clustering)</h3>
+                                <div className="h-[400px]"><Scatter data={customerSegmentsData} options={{ 
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        x: {
+                                            title: { display: true, text: 'Purchase Frequency (Orders)', font: { weight: '800', size: 10 } },
+                                            grid: { color: 'rgba(0,0,0,0.03)' }
+                                        },
+                                        y: {
+                                            title: { display: true, text: 'Total Spend (₹)', font: { weight: '800', size: 10 } },
+                                            grid: { color: 'rgba(0,0,0,0.03)' }
+                                        }
+                                    },
+                                    plugins: {
+                                        legend: { position: 'bottom', labels: { usePointStyle: true, font: { weight: '700', size: 10 } } }
+                                    }
+                                }} /></div>
+                            </div>
+                        </div>
+
+                        {/* Customer Lifecycle Segments - Moved here */}
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-3 px-2">
+                                <Users size={20} className="text-indigo-600" />
+                                <h3 className="text-lg font-black text-slate-900 tracking-tight">Customer Lifecycle Rankings</h3>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {(!mlData?.segments || mlData.segments.length === 0) ? (
+                                    <div className="p-12 bg-white rounded-3xl border border-dashed border-slate-200 text-center col-span-full">
+                                        <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest leading-relaxed">Insufficient demographic density to form robust clusters.<br />Continue growing your customer node base.</p>
+                                    </div>
+                                ) : (
+                                    mlData.segments.map((s, i) => (
+                                        <div key={i} className="bg-white p-6 rounded-[28px] border border-slate-200 shadow-sm hover:shadow-md transition-all flex items-center justify-between group">
+                                            <div className="flex items-center gap-5">
+                                                <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-xl font-black text-indigo-600 border border-indigo-100 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 shadow-inner">
+                                                    #{i + 1}
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-sm font-black text-slate-900 uppercase tracking-tight">{s.label}</h4>
+                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{s.user_id} Nodes Identified</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-lg font-black text-indigo-600 tracking-tighter">₹{Number(s.monetary || 0).toLocaleString()}</div>
+                                                <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Avg. LTV</div>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}
@@ -1343,112 +1405,45 @@ const Dashboard = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {/* Customer Lifecycle Segments */}
-                            <div className="space-y-6">
-                                <div className="flex items-center gap-3 px-2">
-                                    <Users size={20} className="text-indigo-600" />
-                                    <h3 className="text-lg font-black text-slate-900 tracking-tight">Customer Lifecycle Clusters</h3>
-                                </div>
-                                <div className="grid grid-cols-1 gap-4">
-                                    {(!mlData?.segments || mlData.segments.length === 0) ? (
-                                        <div className="p-12 bg-white rounded-3xl border border-dashed border-slate-200 text-center">
-                                            <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest leading-relaxed">Insufficient demographic density to form robust clusters.<br />Continue growing your customer node base.</p>
-                                        </div>
-                                    ) : (
-                                        mlData.segments.map((s, i) => (
-                                            <div key={i} className="bg-white p-6 rounded-[28px] border border-slate-200 shadow-sm hover:shadow-md transition-all flex items-center justify-between group">
-                                                <div className="flex items-center gap-5">
-                                                    <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-xl font-black text-slate-900 border border-slate-100 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500">
-                                                        {s.cluster}
-                                                    </div>
-                                                    <div>
-                                                        <h4 className="text-sm font-black text-slate-900 uppercase tracking-tight">{s.label}</h4>
-                                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{s.user_id} High-Value Nodes Identified</p>
-                                                    </div>
-                                                </div>
-                                                <div className="text-right">
-                                                    <div className="text-lg font-black text-indigo-600 tracking-tighter">₹{Number(s.monetary || 0).toLocaleString()}</div>
-                                                    <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Avg. LTV</div>
-                                                </div>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
+                        {/* Product Affinity Correlations */}
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-3 px-2">
+                                <Network size={20} className="text-emerald-600" />
+                                <h3 className="text-lg font-black text-slate-900 tracking-tight">Market Basket Correlations</h3>
                             </div>
-
-                            {/* Product Affinity Correlations */}
-                            <div className="space-y-6">
-                                <div className="flex items-center gap-3 px-2">
-                                    <Network size={20} className="text-emerald-600" />
-                                    <h3 className="text-lg font-black text-slate-900 tracking-tight">Market Basket Correlations</h3>
-                                </div>
-                                <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden">
-                                    <table className="w-full text-left">
-                                        <thead>
-                                            <tr className="bg-slate-50/50 border-b border-slate-100">
-                                                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Trigger Asset</th>
-                                                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Associated Asset</th>
-                                                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Confidence</th>
+                            <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden">
+                                <table className="w-full text-left">
+                                    <thead>
+                                        <tr className="bg-slate-50/50 border-b border-slate-100">
+                                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Trigger Asset</th>
+                                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Associated Asset</th>
+                                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Confidence</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-50">
+                                        {(!mlData?.associations || mlData.associations.length === 0) ? (
+                                            <tr>
+                                                <td colSpan="3" className="py-20 text-center text-[10px] font-black text-slate-300 uppercase tracking-widest">No significant correlations discovered yet.</td>
                                             </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-50">
-                                            {(!mlData?.associations || mlData.associations.length === 0) ? (
-                                                <tr>
-                                                    <td colSpan="3" className="py-20 text-center text-[10px] font-black text-slate-300 uppercase tracking-widest">No significant correlations discovered yet.</td>
+                                        ) : (
+                                            mlData.associations.map((a, i) => (
+                                                <tr key={i} className="hover:bg-slate-50/50 transition-all">
+                                                    <td className="px-6 py-4 font-bold text-slate-700 text-xs truncate max-w-[140px]">{a.antecedents?.[0]}</td>
+                                                    <td className="px-6 py-4 font-bold text-indigo-600 text-xs truncate max-w-[140px]">{a.consequents?.[0]}</td>
+                                                    <td className="px-6 py-4 text-right">
+                                                        <span className="bg-emerald-50 text-emerald-700 px-2 py-1 rounded-lg font-black text-[10px] border border-emerald-100">
+                                                            {((a.confidence || 0) * 100).toFixed(1)}%
+                                                        </span>
+                                                    </td>
                                                 </tr>
-                                            ) : (
-                                                mlData.associations.map((a, i) => (
-                                                    <tr key={i} className="hover:bg-slate-50/50 transition-all">
-                                                        <td className="px-6 py-4 font-bold text-slate-700 text-xs truncate max-w-[140px]">{a.antecedents?.[0]}</td>
-                                                        <td className="px-6 py-4 font-bold text-indigo-600 text-xs truncate max-w-[140px]">{a.consequents?.[0]}</td>
-                                                        <td className="px-6 py-4 text-right">
-                                                            <span className="bg-emerald-50 text-emerald-700 px-2 py-1 rounded-lg font-black text-[10px] border border-emerald-100">
-                                                                {((a.confidence || 0) * 100).toFixed(1)}%
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* AI Intelligent Insights */}
-                        <div className="bg-slate-900 rounded-[40px] p-10 text-white relative overflow-hidden shadow-2xl shadow-indigo-500/20">
-                            <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-indigo-600 rounded-full blur-[120px] opacity-20"></div>
-                            <div className="absolute -left-20 -top-20 w-80 h-80 bg-emerald-600 rounded-full blur-[120px] opacity-10"></div>
-
-                            <div className="relative z-10 space-y-8">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-indigo-400 border border-white/20 shadow-xl">
-                                        <Zap size={24} />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-2xl font-black tracking-tight leading-none mb-1">Intelligent Performance Nodes</h3>
-                                        <p className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest">Real-time Anomaly Detection & Growth Drivers</p>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {[
-                                        { title: 'Cohort Retention', desc: 'VIP Whales demonstrate 85% higher retention than Standard clusters. Focus on tiered loyalty rewards.', icon: <Users size={16} />, color: 'text-indigo-400' },
-                                        { title: 'Upsell Trajectory', desc: `Market basket analysis suggests pairing ${mlData?.associations?.[0]?.antecedents?.[0] || 'Processors'} with ${mlData?.associations?.[0]?.consequents?.[0] || 'Cooling'} for 24% revenue boost.`, icon: <TrendingUp size={16} />, color: 'text-emerald-400' },
-                                        { title: 'Neural Projection', desc: `Conservative forecasting expects ₹${Number((lineData?.datasets?.[0]?.data?.[lineData?.datasets?.[0]?.data?.length - 1] || 0) * 1.05).toLocaleString()} revenue by next week.`, icon: <Activity size={16} />, color: 'text-rose-400' }
-                                    ].map((node, i) => (
-                                        <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-3xl hover:bg-white/10 transition-all duration-500">
-                                            <div className={`mb-4 ${node.color}`}>{node.icon}</div>
-                                            <h4 className="text-sm font-black uppercase tracking-tight mb-3">{node.title}</h4>
-                                            <p className="text-xs text-slate-300 font-medium leading-relaxed">{node.desc}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
                         </div>
                     </div>
-                )}
+                </div>
+            )}
 
 
             </div>

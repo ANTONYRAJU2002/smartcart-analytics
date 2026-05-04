@@ -22,7 +22,10 @@ def run_safe_import():
         # Dynamically map actual product IDs currently in the database to prevent Foreign Key errors
         product_map = {p.name: p.id for p in Product.query.all()}
         
-        csv_path = r'c:\Users\anton\OneDrive\Desktop\smart\Historical_Sales_Data_5_Years.csv'
+        csv_path = 'Historical_Sales_Data_5_Years.csv'
+        if not os.path.exists(csv_path):
+            # Try to find it relative to script
+            csv_path = os.path.join(os.path.dirname(__file__), 'Historical_Sales_Data_5_Years.csv')
         entries = []
         count = 0
         

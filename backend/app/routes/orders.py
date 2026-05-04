@@ -38,6 +38,10 @@ def create_order():
         product_obj = Product.query.get(item['id'])
         if not product_obj:
             continue
+        if product_obj.stock < item['quantity']:
+            return jsonify({"msg": f"Insufficient stock for {product_obj.name}"}), 400
+            
+        product_obj.stock -= item['quantity']
         total += product_obj.price * item['quantity']
         order_items.append(OrderItem(
             product=product_obj, 
@@ -127,6 +131,12 @@ def cancel_order(id):
     if order.status != 'pending':
         return jsonify({"msg": "Cannot cancel order that is not pending"}), 400
 
+    # Restore stock
+    for item in order.items:
+        if item.product and item.status == 'active':
+            item.product.stock += item.quantity
+            item.status = 'cancelled'
+
     order.status = 'cancelled'
     db.session.commit()
     return jsonify({"msg": "Order cancelled"}), 200
@@ -162,6 +172,10 @@ def cancel_order_item(id):
     # Subtract the cost from the total
     item_total = item_to_cancel.price_at_purchase * item_to_cancel.quantity
     order.total_amount = max(0, order.total_amount - item_total)
+
+    # Restore stock for the cancelled item
+    if item_to_cancel.product:
+        item_to_cancel.product.stock += item_to_cancel.quantity
 
     # Change the status instead of deleting the item
     item_to_cancel.status = 'cancelled'

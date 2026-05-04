@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from app.models import User, Order, OfflineSales
+from app.models import User, Order, OfflineSales, Return
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 
@@ -55,21 +55,31 @@ def get_offline_sales():
     if not current_user or current_user.role not in ['admin', 'staff']:
         return jsonify({"msg": "Access denied"}), 403
 
-    sales = OfflineSales.query.order_by(OfflineSales.date.desc()).all()
+    sales = OfflineSales.query.order_by(OfflineSales.created_at.desc()).all()
+    
+    # Get returned sale IDs for flagging - using a set for efficiency and distinct IDs for query
+    sale_ids = [s.sale_id for s in sales if s.sale_id]
+    returned_sale_ids = {r.sale_id for r in Return.query.filter(Return.sale_id.in_(sale_ids)).all()} if sale_ids else set()
+    
     result = []
     for s in sales:
-        # Calculate profit on the fly for admin list
-        profit = s.total_amount - (s.quantity * (s.cost_price or 0)) if s.total_amount and s.quantity else 0
         result.append({
             'id': s.id,
             'sale_id': s.sale_id,
-            'date': s.date.strftime('%Y-%m-%d'),
-            'amount': s.total_amount,
-            'profit': profit,
+            'date': s.date.strftime('%Y-%m-%d') if s.date else '',
+            'created_at': s.created_at.strftime('%Y-%m-%d %H:%M') if s.created_at else '',
+            'amount': float(s.total_amount or 0),
+            'price': float(s.price or 0),
+            'discount': float(s.offline_discount or 0),
             'staff': s.staff_name or (s.staff_record.username if s.staff_record else 'Unknown'),
             'product': s.product_name,
+            'category': s.category or 'General',
             'quantity': s.quantity,
-            'method': s.payment_method
+            'method': s.payment_method,
+            'customer_name': s.customer_name or '',
+            'customer_phone': s.customer_phone or '',
+            'notes': s.notes or '',
+            'is_returned': s.sale_id in returned_sale_ids
         })
     return jsonify(result), 200
 

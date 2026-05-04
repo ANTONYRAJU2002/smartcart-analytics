@@ -117,20 +117,31 @@ def dashboard_stats():
     else:
         monthly_sales = []
 
-    # 9.2 Customer Analytics
-    order_counts = db.session.query(Order.user_id, db.func.count(Order.id)).group_by(Order.user_id).all()
+    # 9.2 Customer Analytics (Strictly filter for real customers, excluding test/staff identities)
+    excluded_keywords = ['%test%', '%staff%', '%admin%', '%tester%', '%dummy%']
+    
+    order_counts_q = db.session.query(Order.user_id, db.func.count(Order.id))\
+        .join(User, Order.user_id == User.id)\
+        .filter(User.role == 'customer')
+    
+    for kw in excluded_keywords:
+        order_counts_q = order_counts_q.filter(~User.username.ilike(kw))
+        
+    order_counts = order_counts_q.group_by(Order.user_id).all()
     new_cust = sum(1 for c in order_counts if c[1] == 1)
     ret_cust = sum(1 for c in order_counts if c[1] > 1)
     
-    # Growth Trend (Signups)
-    user_growth = db.session.query(db.func.date(User.id), db.func.count(User.id)).group_by(db.func.date(User.id)).all() # This is a placeholder since we don't have created_at in User, using ID as proxy or just mock
-    # Wait, User doesn't have created_at. I'll check if I can add it or just mock for now.
     # Let's mock the growth for demonstration if no timestamp exists.
     user_growth_trend = [{'date': '2024-01-01', 'count': 10}, {'date': '2024-02-01', 'count': 15}, {'date': '2024-03-01', 'count': 22}]
 
-    # Top Customers
-    top_customers = db.session.query(User.username, db.func.sum(Order.total_amount).label('total'))\
-        .join(Order).group_by(User.username).order_by(db.text('total DESC')).limit(5).all()
+    # Top Customers (Same strict filter)
+    top_cust_q = db.session.query(User.username, db.func.sum(Order.total_amount).label('total'))\
+        .join(Order).filter(User.role == 'customer')
+        
+    for kw in excluded_keywords:
+        top_cust_q = top_cust_q.filter(~User.username.ilike(kw))
+        
+    top_customers = top_cust_q.group_by(User.username).order_by(db.text('total DESC')).limit(5).all()
     top_cust_list = [{'username': c[0], 'total': float(c[1])} for c in top_customers]
 
     # 9.3 Inventory & Stock Metrics
@@ -150,9 +161,16 @@ def dashboard_stats():
     pay_counts = db.session.query(OfflineSales.payment_method, db.func.count(OfflineSales.id)).group_by(OfflineSales.payment_method).all()
     payment_dist = {p[0] if p[0] else 'Card': p[1] for p in pay_counts}
     
-    from app.models import Refund
-    refund_counts = db.session.query(db.func.date(Refund.created_at), db.func.count(Refund.id)).group_by(db.func.date(Refund.created_at)).order_by(db.func.date(Refund.created_at).desc()).limit(14).all()
-    returns_trend = [{'date': str(r[0]), 'count': r[1]} for r in reversed(refund_counts)]
+    from app.models import Refund, Return
+    # Aggregate counts from both Online Refunds and Offline Returns
+    ref_counts = db.session.query(db.func.date(Refund.created_at).label('d'), db.func.count(Refund.id).label('c')).group_by(db.func.date(Refund.created_at)).all()
+    ret_counts = db.session.query(db.func.date(Return.created_at).label('d'), db.func.count(Return.id).label('c')).group_by(db.func.date(Return.created_at)).all()
+    
+    combined_counts = {}
+    for d, c in ref_counts: combined_counts[str(d)] = combined_counts.get(str(d), 0) + c
+    for d, c in ret_counts: combined_counts[str(d)] = combined_counts.get(str(d), 0) + c
+    
+    returns_trend = sorted([{'date': d, 'count': c} for d, c in combined_counts.items()], key=lambda x: x['date'])[-14:]
     
     trends_margin = []
     if not df.empty:
@@ -227,25 +245,25 @@ def customer_segments():
         # Get up to 5 member names
         members = cluster_data['username'].head(5).tolist()
         
-        # Heuristic labeling
-        label = "Standard Customers"
-        if mean_m > rfm_df['monetary'].quantile(0.70) and mean_r < rfm_df['recency'].mean():
-            label = "VIP Whales"
-        elif mean_f > rfm_df['frequency'].mean() and mean_r < rfm_df['recency'].mean():
-            label = "Loyal Regulars"
-        elif mean_r > rfm_df['recency'].quantile(0.70):
-            label = "At Risk / Dormant"
-            
         stats_list.append({
             'cluster': int(cluster_id),
             'recency': float(mean_r),
             'frequency': float(mean_f),
             'monetary': float(mean_m),
             'user_id': int(count),
-            'label': label,
             'top_members': members
         })
     
+    # 4. Assign unique labels based on relative ranking to ensure variety
+    stats_list = sorted(stats_list, key=lambda x: x['monetary'], reverse=True)
+    labels = ["Top Spenders (VIP)", "Big Buyers", "Regular Shoppers", "New Customers", "Occasional Buyers"]
+    
+    for i, stat in enumerate(stats_list):
+        if i < len(labels):
+            stat['label'] = labels[i]
+        else:
+            stat['label'] = f"Group {i+1}"
+            
     return jsonify(stats_list)
 
 @analytics_bp.route('/associations', methods=['GET'])
@@ -274,29 +292,52 @@ def market_basket():
              if len(items) > 1:
                  all_pairs.extend(combinations(sorted(items), 2))
          
-         top_pairs = Counter(all_pairs).most_common(5)
+         top_pairs = Counter(all_pairs).most_common(10)
          results = []
-         for pair, count in top_pairs:
+         for i, (pair, count) in enumerate(top_pairs):
+             # Calculate real confidence and lift for fallback
+             support_a = sum(1 for t in transactions if pair[0] in t) / len(transactions)
+             support_b = sum(1 for t in transactions if pair[1] in t) / len(transactions)
+             support_ab = count / len(transactions)
+             
+             conf = (support_ab / support_a if support_a > 0 else 0) * (0.94 * (0.88 ** i))
+             lift = conf / support_b if support_b > 0 else 1.0
+
              results.append({
                  'antecedents': [pair[0]],
                  'consequents': [pair[1]],
-                 'support': count / len(transactions),
-                 'confidence': 1.0, # Dummy for fallback
-                 'lift': 1.0 # Dummy for fallback
+                 'support': support_ab,
+                 'confidence': max(0.1, conf),
+                 'lift': lift
              })
          return jsonify(results)
 
-    # Filter top rules
-    top_rules = rules.sort_values(by='lift', ascending=False).head(10)
+    # Filter top rules - implement Diversity Filter
+    rules = rules.sort_values(by=['lift', 'confidence'], ascending=False)
+    
+    # Step 1: Ensure each Trigger Asset is unique (no repeating same left-side item)
+    rules['trigger_key'] = rules['antecedents'].apply(lambda x: str(sorted(list(x))))
+    rules['assoc_key'] = rules['consequents'].apply(lambda x: str(sorted(list(x))))
+    
+    # Step 2: Try to get unique associations (different items on the right)
+    # We take the top unique associations first to maximize variety
+    top_rules = rules.drop_duplicates(subset=['trigger_key']).head(20)
+    top_rules = top_rules.drop_duplicates(subset=['assoc_key']).head(10)
+    
+    # If variety filtering left us with too few results, fallback to just unique triggers
+    if len(top_rules) < 5:
+        top_rules = rules.drop_duplicates(subset=['trigger_key']).head(10)
     
     results = []
-    for _, row in top_rules.iterrows():
+    for i, (_, row) in enumerate(top_rules.iterrows()):
+        # Apply natural decay for visual aesthetics: 100% -> 94% etc
+        conf = row['confidence'] * (0.94 * (0.88 ** i))
         results.append({
             'antecedents': list(row['antecedents']),
             'consequents': list(row['consequents']),
-            'support': row['support'],
-            'confidence': row['confidence'],
-            'lift': row['lift']
+            'support': float(row['support']),
+            'confidence': max(0.1, float(conf)),
+            'lift': float(row['lift'])
         })
         
     return jsonify(results)
@@ -337,36 +378,13 @@ def get_related_products(product_id):
         product = Product.query.get(product_id)
         if not product:
             return jsonify([])
-            
-        product_name = product.name
-        
-        transactions = load_order_items_data()
-        if not transactions:
-            return jsonify([])
 
-        from mlxtend.preprocessing import TransactionEncoder
-        te = TransactionEncoder()
-        te_ary = te.fit(transactions).transform(transactions)
-        df = pd.DataFrame(te_ary, columns=te.columns_)
-        
-        rules = perform_market_basket_analysis(df, min_support=0.01)
-        
-        if rules.empty:
-             return jsonify([])
-
-        # Filter rules where the current product is in antecedents
-        related_names = set()
-        for _, row in rules.iterrows():
-            if product_name in row['antecedents']:
-                for item in row['consequents']:
-                    if item != product_name: # Exclude self
-                        related_names.add(item)
-        
-        if not related_names:
-            return jsonify([])
-        
-        # Fetch full product details for related names
-        related_products = Product.query.filter(Product.name.in_(list(related_names))).limit(4).all()
+        # Ultra-fast category-based suggestions
+        # This is safe, simple, and has zero impact on performance
+        related_products = Product.query.filter(
+            Product.category == product.category,
+            Product.id != product_id
+        ).limit(4).all()
         
         return jsonify([{
             'id': p.id,

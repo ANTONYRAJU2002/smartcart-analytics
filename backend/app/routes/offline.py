@@ -57,8 +57,8 @@ def add_offline_sales():
         staff_unique_id=data.get('staff_unique_id'),
         product_id=data.get('product_id'),
         product_name=data['product_name'],
-        category=data.get('category', 'General'),
-        sub_category=data.get('sub_category'),
+        category=data.get('category') or 'General',
+        sub_category=data.get('sub_category') or 'General',
         quantity=qty,
         price=price,
         offline_discount=discount,
@@ -190,9 +190,11 @@ def get_staff_stats():
     
     no_history = request.args.get('no_history') == 'true'
     history = []
-    
     if not no_history:
         entries = base_query.order_by(OfflineSales.created_at.desc()).limit(1000).all()
+        # Get list of returned sale IDs to flag history items
+        returned_sale_ids = {r.sale_id for r in Return.query.filter(Return.sale_id.in_([e.sale_id for e in entries])).all()}
+        
         for e in entries:
             history.append({
                 'sale_id': e.sale_id,
@@ -201,14 +203,15 @@ def get_staff_stats():
                 'product': e.product_name,
                 'category': e.category or '',
                 'quantity': e.quantity,
-                'price': e.price,
-                'discount': e.offline_discount or 0,
-                'amount': e.total_amount,
+                'price': float(e.price or 0),
+                'discount': float(e.offline_discount or 0),
+                'amount': float(e.total_amount or 0),
                 'method': e.payment_method,
                 'staff': e.staff_name,
                 'customer_name': e.customer_name or '',
                 'customer_phone': e.customer_phone or '',
-                'notes': e.notes or ''
+                'notes': e.notes or '',
+                'is_returned': e.sale_id in returned_sale_ids
             })
 
     return jsonify({
@@ -279,6 +282,17 @@ def bulk_upload_offline_sales():
                 customer_phone=row.get('Customer Phone'),
                 notes=row.get('Notes')
             )
+            # Update stock and fetch cost_price if product_id is provided
+            if entry.product_id:
+                product = Product.query.get(entry.product_id)
+                if product:
+                    # Only reduce stock if the sale is from today (prevent historical data from depleting current stock)
+                    if entry.date == datetime.utcnow().date():
+                        product.stock -= qty
+                    
+                    if not entry.cost_price:
+                        entry.cost_price = product.cost_price
+
             db.session.add(entry)
             entries_added += 1
         

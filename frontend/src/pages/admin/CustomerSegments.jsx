@@ -69,46 +69,32 @@ const CustomerSegments = () => {
 
     const getSegmentStyles = (label) => {
         switch(label) {
-            case 'VIP Whales': return { 
-                icon: <Star size={20} className="text-amber-600" />, 
-                bg: '#fffbeb', 
-                border: '#fef3c7', 
-                accent: '#f59e0b', 
-                title: 'text-amber-900',
-                sub: 'text-amber-600'
+            case 'Top Spenders (VIP)': return { 
+                icon: <Star size={20} />, 
+                bg: '#fffbeb', border: '#fef3c7', accent: '#f59e0b'
             };
-            case 'Loyal Regulars': return { 
-                icon: <Activity size={20} className="text-emerald-600" />, 
-                bg: '#ecfdf5', 
-                border: '#d1fae5', 
-                accent: '#10b981',
-                title: 'text-emerald-900',
-                sub: 'text-emerald-600'
+            case 'Big Buyers': return { 
+                icon: <Zap size={20} />, 
+                bg: '#ecfdf5', border: '#d1fae5', accent: '#10b981'
             };
-            case 'At Risk / Dormant': return { 
-                icon: <Clock size={20} className="text-rose-600" />, 
-                bg: '#fff1f2', 
-                border: '#ffe4e6', 
-                accent: '#f43f5e',
-                title: 'text-rose-900',
-                sub: 'text-rose-600'
+            case 'Regular Shoppers': return { 
+                icon: <Activity size={20} />, 
+                bg: '#eef2ff', border: '#e0e7ff', accent: '#6366f1'
             };
             default: return { 
-                icon: <Users size={20} className="text-indigo-600" />, 
-                bg: '#eef2ff', 
-                border: '#e0e7ff', 
-                accent: '#6366f1',
-                title: 'text-indigo-900',
-                sub: 'text-indigo-600'
+                icon: <Users size={20} />, 
+                bg: '#f8fafc', border: '#f1f5f9', accent: '#64748b'
             };
         }
     };
 
     const getRecommendation = (label) => {
         switch(label) {
-            case 'VIP Whales': return "Priority VIP support & exclusive early access to high-end builds.";
-            case 'Loyal Regulars': return "Reward with loyalty points or bundle discounts to maintain frequency.";
-            case 'At Risk / Dormant': return "Urgent re-engagement campaign with a personalized 'We miss you' discount.";
+            case 'Top Spenders (VIP)': return "Priority VIP support & exclusive early access to high-end builds.";
+            case 'Big Buyers': return "Personalized rig consultations and high-end component bundles.";
+            case 'Regular Shoppers': return "Loyalty rewards and early access to seasonal discount events.";
+            case 'New Customers': return "Target with 'Getting Started' guides and first-purchase follow-up offers.";
+            case 'Occasional Buyers': return "Educational content about PC maintenance and entry-level upgrades.";
             default: return "Nurture with educational content and standard promotional offers.";
         }
     };
@@ -137,7 +123,6 @@ const CustomerSegments = () => {
                             }}>
                                 <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', padding: '0.5rem 1rem', background: style.bg, borderRadius: '12px', fontWeight: 900, fontSize: '0.65rem', color: style.accent, textTransform: 'uppercase', border: `1px solid ${style.border}` }}>
                                     Bucket {idx + 1}
-                                0px
                                 </div>
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginBottom: '2rem' }}>
@@ -202,6 +187,54 @@ const CustomerSegments = () => {
                             </p>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {/* Comparison Matrix Section */}
+            <div style={{ marginTop: '4rem', padding: '3rem', background: '#fff', borderRadius: '40px', border: '1px solid #f1f5f9', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)' }}>
+                <div style={{ marginBottom: '2.5rem' }}>
+                    <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', margin: '0 0 0.5rem' }}>Segment Comparison Matrix</h2>
+                    <p style={{ color: '#64748b', fontWeight: 600, fontSize: '0.9rem' }}>Side-by-side performance data for each customer group</p>
+                </div>
+
+                <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                        <thead>
+                            <tr style={{ borderBottom: '2px solid #f1f5f9' }}>
+                                <th style={{ padding: '1.25rem', color: '#64748b', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>Segment Name</th>
+                                <th style={{ padding: '1.25rem', color: '#64748b', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>Reach</th>
+                                <th style={{ padding: '1.25rem', color: '#64748b', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>Avg. Spend (M)</th>
+                                <th style={{ padding: '1.25rem', color: '#64748b', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>Frequency (F)</th>
+                                <th style={{ padding: '1.25rem', color: '#64748b', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>Recency (R)</th>
+                                <th style={{ padding: '1.25rem', color: '#64748b', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>Key Customers</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {segments.map((s, i) => (
+                                <tr key={i} style={{ borderBottom: '1px solid #f8fafc', transition: 'background 0.2s' }}>
+                                    <td style={{ padding: '1.5rem 1.25rem' }}>
+                                        <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '1rem' }}>{s.label}</div>
+                                        <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 700 }}>Bucket {i+1}</div>
+                                    </td>
+                                    <td style={{ padding: '1.5rem 1.25rem' }}>
+                                        <span style={{ background: '#f1f5f9', padding: '0.3rem 0.8rem', borderRadius: '8px', fontWeight: 800, color: '#475569', fontSize: '0.85rem' }}>
+                                            {s.user_id} Users
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: '1.5rem 1.25rem', fontWeight: 900, color: '#10b981' }}>{formatCurrency(s.monetary)}</td>
+                                    <td style={{ padding: '1.5rem 1.25rem', fontWeight: 800, color: '#6366f1' }}>{s.frequency.toFixed(1)} <span style={{fontSize: '0.7rem', color: '#94a3b8'}}>orders</span></td>
+                                    <td style={{ padding: '1.5rem 1.25rem', fontWeight: 800, color: '#f59e0b' }}>{s.recency.toFixed(0)} <span style={{fontSize: '0.7rem', color: '#94a3b8'}}>days ago</span></td>
+                                    <td style={{ padding: '1.5rem 1.25rem' }}>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', maxWidth: '250px' }}>
+                                            {s.top_members?.map((name, i) => (
+                                                <span key={i} style={{ background: '#fff', border: '1px solid #e2e8f0', padding: '0.25rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>{name}</span>
+                                            ))}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

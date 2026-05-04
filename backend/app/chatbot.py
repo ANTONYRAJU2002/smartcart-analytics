@@ -11,7 +11,7 @@ def configure_genai():
     if not _is_configured:
         api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key or not str(api_key).strip():
-            api_key = "AIzaSyAuFDoSFMkxylsvpzO10QKHlhFhyeL4gec"
+            api_key = os.environ.get("GEMINI_API_KEY", "AIzaSyAvWXsAU3j_L5fSkB1pfkSeVABDM8J-XCA") # Recommended: Use env var
             
         genai.configure(api_key=api_key)
         _is_configured = True
